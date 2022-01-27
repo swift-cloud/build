@@ -24,12 +24,18 @@ const cluster = new awsx.ecs.Cluster('swift-build', {
 
 // Task role
 const taskRole = new aws.iam.Role('swift-build-task-role', {
-  assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.SqsPrincipal)
+  assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal('*')
 })
 
 // Attach sqs permissions
-new aws.iam.RolePolicyAttachment('rpa-ssmrole-ec2containerservice', {
+new aws.iam.RolePolicyAttachment('swift-build-task-role-sqs-attachment', {
   policyArn: aws.iam.ManagedPolicy.AmazonSQSFullAccess,
+  role: taskRole
+})
+
+// Attach s3 permissions
+new aws.iam.RolePolicyAttachment('swift-build-task-role-s3-attachment', {
+  policyArn: aws.iam.ManagedPolicy.AmazonS3FullAccess,
   role: taskRole
 })
 
