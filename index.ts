@@ -8,7 +8,13 @@ const vpc = new awsx.ec2.Vpc('swift-cloud', {})
 const repo = new awsx.ecr.Repository('swift-cloud')
 
 // Build docker image
-const image = repo.buildAndPushImage('./')
+const image = repo.buildAndPushImage({
+  context: './',
+  dockerfile: './Dockerfile',
+  cacheFrom: {
+    stages: ['base', 'aws', 'app']
+  }
+})
 
 // Create service
 const cluster = new awsx.ecs.Cluster('swift-build', {
