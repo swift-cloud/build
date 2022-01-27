@@ -1435,6 +1435,13 @@ sprintf-js@~1.0.2:
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
 
+sqs-consumer@^5.6.0:
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/sqs-consumer/-/sqs-consumer-5.6.0.tgz#a77c75fecb9ca3d108556d87a07f799ea58b594c"
+  integrity sha512-p+K3UV8GwF1//Nfq7swbm/Un137IwxewzxapfTyyEVpdmzPKEDYrAzuGJvP87YWVSWzbkvxQ0By0vhamouGdxg==
+  dependencies:
+    debug "^4.1.1"
+
 string.prototype.trimend@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/string.prototype.trimend/-/string.prototype.trimend-1.0.4.tgz#e75ae90c2942c63504686c18b287b4a0b1a45f80"
