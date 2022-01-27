@@ -17,14 +17,17 @@ export const handler: SQSHandler = async (event) => {
 export async function onMessage(payload: MessagePayload) {
   // Clean working directory
   await utils.clean({ cwd: payload.cwd })
-  // Run each command
-  for (const cmd of payload.cmd) {
-    console.log('$', cmd)
-    const [command, ...args] = cmd.split(' ')
-    const res = await spawn(command, args, { cwd: payload.cwd })
-    if (res.stdout) {
-      console.log(res.stdout)
+
+  try {
+    // Run each command
+    for (const cmd of payload.cmd) {
+      console.log('$', cmd)
+      const [command, ...args] = cmd.split(' ')
+      const res = await spawn(command, args, { cwd: payload.cwd })
+      console.log(res.stdout ? res.stdout + '\n' : '')
     }
-    console.log('')
+  } finally {
+    // Clean up when complete
+    await utils.clean({ cwd: payload.cwd })
   }
 }

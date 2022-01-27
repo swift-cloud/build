@@ -3,7 +3,11 @@ import * as aws from '@pulumi/aws'
 import * as awsx from '@pulumi/awsx'
 
 // Allocate a new VPC with the default settings:
-const vpc = new awsx.ec2.Vpc('swift-cloud', {})
+const vpc = new awsx.ec2.Vpc('swift-cloud', {
+  cidrBlock: '172.31.0.0/16',
+  subnets: [{ type: 'public' }],
+  numberOfAvailabilityZones: 1
+})
 
 // Create ECR repo
 const repo = new awsx.ecr.Repository('swift-cloud')
