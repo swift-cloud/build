@@ -41,4 +41,4 @@ ADD src ./src
 COPY *.json *.lock ./
 RUN yarn install
 RUN yarn build
-CMD [ "node", "bin/fargate.js" ]
+CMD [ "node", "./bin/fargate.js" ]
