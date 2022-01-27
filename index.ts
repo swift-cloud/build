@@ -24,7 +24,7 @@ const cluster = new awsx.ecs.Cluster('swift-build', {
 
 // Task role
 const taskRole = new aws.iam.Role('swift-build-task-role', {
-  assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsPrincipal)
+  assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsTasksPrincipal)
 })
 
 // Attach sqs permissions
