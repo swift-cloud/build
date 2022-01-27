@@ -26,7 +26,8 @@ const service = new awsx.ecs.FargateService('swift-build-service', {
   cluster,
   taskDefinitionArgs: {
     container: {
-      image
+      image,
+      essential: true
     }
   },
   desiredCount: 1
