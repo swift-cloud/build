@@ -1,6 +1,5 @@
 {
   "name": "build",
-  "main": "src/index.ts",
   "dependencies": {
     "@pulumi/pulumi": "^3.0.0",
     "@pulumi/aws": "^4.0.0",

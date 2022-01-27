@@ -10,10 +10,15 @@ const repo = new awsx.ecr.Repository('swift-cloud')
 // Build docker image
 const image = repo.buildAndPushImage('./')
 
+// Create service
+const cluster = new awsx.ecs.Cluster('swift-build', {
+  vpc
+})
+
 // Create container
-const container = new awsx.ecs.FargateService('swift-build', {
+const service = new awsx.ecs.FargateService('swift-build-service', {
+  cluster,
   taskDefinitionArgs: {
-    vpc,
     container: {
       image
     }
