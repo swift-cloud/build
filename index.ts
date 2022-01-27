@@ -25,6 +25,17 @@ const cluster = new awsx.ecs.Cluster('swift-build', {
   vpc
 })
 
+// Task role
+const taskRole = new aws.iam.Role('swift-build-task-role', {
+  assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.SqsPrincipal)
+})
+
+// Attach sqs permissions
+new aws.iam.RolePolicyAttachment('rpa-ssmrole-ec2containerservice', {
+  policyArn: aws.iam.ManagedPolicy.AmazonSQSFullAccess,
+  role: taskRole
+})
+
 // Create container
 const service = new awsx.ecs.FargateService('swift-build-service', {
   cluster,
@@ -33,9 +44,7 @@ const service = new awsx.ecs.FargateService('swift-build-service', {
       image,
       essential: true
     },
-    taskRole: new aws.iam.Role('swift-build-role', {
-      assumeRolePolicy: aws.iam.ManagedPolicy.AmazonSQSFullAccess
-    })
+    taskRole
   },
   desiredCount: 1
 })
