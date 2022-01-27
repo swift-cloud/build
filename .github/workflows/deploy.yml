@@ -28,6 +28,6 @@ jobs:
       - uses: pulumi/actions@v3
         with:
           command: up
-          stack-name: swift-cloud/build
+          stack-name: swift-cloud/prod
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
