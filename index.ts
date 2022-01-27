@@ -24,30 +24,22 @@ const cluster = new awsx.ecs.Cluster('swift-build', {
 
 // Task role
 const taskRole = new aws.iam.Role('swift-build-task-role', {
-  assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsTasksPrincipal)
-})
-
-// Attach sqs permissions
-new aws.iam.RolePolicyAttachment('swift-build-task-role-sqs-attachment', {
-  policyArn: aws.iam.ManagedPolicy.AmazonSQSFullAccess,
-  role: taskRole
-})
-
-// Attach s3 permissions
-new aws.iam.RolePolicyAttachment('swift-build-task-role-s3-attachment', {
-  policyArn: aws.iam.ManagedPolicy.AmazonS3FullAccess,
-  role: taskRole
+  assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsTasksPrincipal),
+  managedPolicyArns: [
+    aws.iam.ManagedPolicy.AmazonSQSFullAccess,
+    aws.iam.ManagedPolicy.AmazonS3FullAccess
+  ]
 })
 
 // Create container
 const service = new awsx.ecs.FargateService('swift-build-service', {
   cluster,
+  desiredCount: 1,
   taskDefinitionArgs: {
     container: {
       image,
       essential: true
     },
     taskRole
-  },
-  desiredCount: 1
+  }
 })
