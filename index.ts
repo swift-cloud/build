@@ -9,6 +9,11 @@ const vpc = new awsx.ec2.Vpc('swift-cloud', {
   numberOfAvailabilityZones: 1
 })
 
+// Create build sqs queue
+const queue = new aws.sqs.Queue('build', {
+  visibilityTimeoutSeconds: 15 * 60
+})
+
 // Create ECR repo
 const repo = new awsx.ecr.Repository('swift-cloud')
 
@@ -64,7 +69,7 @@ export const service = new awsx.ecs.FargateService('swift-build-service', {
       cpu: 1024,
       memory: 2048,
       memoryReservation: 1024,
-      environment: []
+      environment: [{ name: 'SQS_QUEUE_URL', value: queue.url }]
     },
     taskRole
   }

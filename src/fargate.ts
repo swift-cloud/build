@@ -3,10 +3,10 @@ import * as https from 'https'
 import * as aws from 'aws-sdk'
 import * as lambda from './lambda'
 
-console.log('Listening to queue...')
+console.log('Listening to queue:', process.env.SQS_QUEUE_URL)
 
 const app = Consumer.create({
-  queueUrl: 'https://sqs.us-east-1.amazonaws.com/226993331089/SwiftBuildTest',
+  queueUrl: process.env.SQS_QUEUE_URL,
   handleMessage: async (message) => {
     try {
       const payload = JSON.parse(message.Body ?? '')
