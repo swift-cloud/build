@@ -1,21 +1,16 @@
-import { spawn, SpawnOptions } from './spawn.js'
+import { spawn, SpawnOptions } from './spawn'
+import { BuildPayload } from './types'
 
-export async function build(options: SpawnOptions) {
-  return spawn(
+export async function build(payload: BuildPayload, options: SpawnOptions) {
+  await spawn(
     'swift',
-    [
-      'build',
-      '-Xswiftc',
-      '-module-cache-path',
-      '-Xswiftc',
-      `${options.cwd}/.cache`,
-      '-c',
-      'release',
-      '--triple',
-      'wasm32-unknown-wasi'
-    ],
+    ['build', '-c', payload.configuration, '--triple', 'wasm32-unknown-wasi'],
     options
   )
+
+  return {
+    wasmBinaryPath: `${options.cwd}/.build/${payload.configuration}/${payload.targetName}.wasm`
+  }
 }
 
 export async function version(options: SpawnOptions) {

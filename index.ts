@@ -63,7 +63,8 @@ export const service = new awsx.ecs.FargateService('swift-build-service', {
       essential: true,
       cpu: 1024,
       memory: 2048,
-      memoryReservation: 1024
+      memoryReservation: 1024,
+      environment: []
     },
     taskRole
   }

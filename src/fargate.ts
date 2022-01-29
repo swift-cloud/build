@@ -1,5 +1,7 @@
 import { Consumer } from 'sqs-consumer'
-import * as lambda from './lambda.js'
+import * as https from 'https'
+import * as aws from 'aws-sdk'
+import * as lambda from './lambda'
 
 console.log('Listening to queue...')
 
@@ -12,7 +14,13 @@ const app = Consumer.create({
     } catch (err: any) {
       console.error(err.stderr ?? err.message)
     }
-  }
+  },
+  sqs: new aws.SQS({
+    region: 'us-east-1',
+    httpOptions: {
+      agent: new https.Agent({ keepAlive: true })
+    }
+  })
 })
 
 app.on('error', (err: any) => {
