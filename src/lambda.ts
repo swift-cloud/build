@@ -18,11 +18,8 @@ export const handler: SQSHandler = async (event) => {
 }
 
 export async function onMessage(payload: MessagePayload) {
-  // Slugify git ref
-  const slug = payload.git.ref.replace(/\//g, '-')
-
-  // Create directory combining project id and ref slug
-  const cwd = `./${payload.project.id}-${slug}`
+  // Create working directory
+  const cwd = `./build_${payload.deployment.id}`
 
   try {
     // Clean working directory
@@ -52,7 +49,7 @@ export async function onMessage(payload: MessagePayload) {
 export async function build(payload: MessagePayload, cwd: string) {
   const startTime = Date.now()
 
-  console.log('[build] project:', payload.project.id)
+  console.log('[build] deployment:', payload.deployment.id)
 
   // Clone the repo
   console.log('[build] git clone:', payload.git.url, payload.git.ref)
