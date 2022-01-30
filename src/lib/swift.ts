@@ -16,20 +16,31 @@ export async function build(payload: BuildPayload, options: SpawnOptions) {
 
 export async function pack(wasmBinaryPath: string, options: SpawnOptions) {
   const pkgDir = `${options.cwd}/pkg`
-  const tarPath = `${pkgDir}/app.tar.gz`
+  const appDir = `${pkgDir}/app`
+  const binDir = `${appDir}/bin`
+  const pkgName = `app.tar.gz`
+
+  // Make necessary directories
   await mkdir(pkgDir)
-  await mkdir(`${pkgDir}/app`)
-  await mkdir(`${pkgDir}/app/bin`)
-  await copyFile(wasmBinaryPath, `${pkgDir}/app/bin/main.wasm`)
+  await mkdir(appDir)
+  await mkdir(binDir)
+
+  // Copy WASM binary to pkg dir
+  await copyFile(wasmBinaryPath, `${binDir}/main.wasm`)
+
+  // Write fastly.toml necessary for deploy
   await writeFile(
-    `${pkgDir}/app/fastly.toml`,
+    `${appDir}/fastly.toml`,
     ['language = "swift"', 'manifest_version = 2', 'name = "app"'].join('\n')
   )
-  await spawn('tar', ['-czvf', '../app.tar.gz', '.'], {
-    cwd: `${pkgDir}/app`
+
+  // Zip up binary
+  await spawn('tar', ['-czvf', pkgName, '.'], {
+    cwd: appDir
   })
+
   return {
-    wasmPackagePath: tarPath
+    wasmPackagePath: `${appDir}/${pkgName}`
   }
 }
 
