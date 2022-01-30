@@ -1,5 +1,5 @@
 import { SQSHandler } from 'aws-lambda'
-import { MessagePayload } from './lib/types'
+import { BuildMessage } from './lib/types'
 import * as git from './lib/git'
 import * as s3 from './lib/s3'
 import * as sqs from './lib/sqs'
@@ -8,32 +8,28 @@ import * as utils from './lib/utils'
 
 export const handler: SQSHandler = async (event) => {
   for (const record of event.Records) {
-    try {
-      const payload = JSON.parse(record.body)
-      await onMessage(payload)
-    } catch (err: any) {
-      console.error(err.stderr)
-    }
+    const payload = JSON.parse(record.body)
+    await onMessage(payload)
   }
 }
 
-export async function onMessage(payload: MessagePayload) {
+export async function onMessage(message: BuildMessage) {
   // Create working directory
-  const cwd = `./build_${payload.deployment.id}`
+  const cwd = `./build_${message.deployment.id}`
 
   try {
     // Clean working directory
     await utils.clean({ cwd })
     // Build the project
-    await build(payload, cwd)
+    await build(message, cwd)
   } catch (error: any) {
     console.error('[build] error:')
     console.error(error)
     // Send error message
-    await sqs.sendMessage(payload.finally, {
-      project: payload.project,
-      deployment: payload.deployment,
-      output: payload.output,
+    await sqs.sendMessage(message.finally, {
+      project: message.project,
+      deployment: message.deployment,
+      output: message.output,
       error: {
         code: Number(error.code ?? -1),
         message: error.stderr ?? error.message,
@@ -46,7 +42,7 @@ export async function onMessage(payload: MessagePayload) {
   }
 }
 
-export async function build(payload: MessagePayload, cwd: string) {
+export async function build(payload: BuildMessage, cwd: string) {
   const startTime = Date.now()
 
   console.log('[build] deployment:', payload.deployment.id)

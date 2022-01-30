@@ -1,4 +1,4 @@
-export interface MessagePayload {
+export interface BuildMessage {
   project: ProjectPayload
   deployment: DeploymentPayload
   git: GitPayload
