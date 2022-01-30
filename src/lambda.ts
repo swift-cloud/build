@@ -21,7 +21,7 @@ export async function onMessage(message: BuildMessage) {
     // Clean working directory
     await utils.clean({ cwd })
     // Build the project
-    await build(message, cwd)
+    await build(message, { cwd })
   } catch (error: any) {
     console.error('[build] error:')
     console.error(error)
@@ -42,22 +42,26 @@ export async function onMessage(message: BuildMessage) {
   }
 }
 
-export async function build(payload: BuildMessage, cwd: string) {
+export async function build(payload: BuildMessage, options: { cwd: string }) {
   const startTime = Date.now()
 
   console.log('[build] deployment:', payload.deployment.id)
 
   // Clone the repo
   console.log('[build] git clone:', payload.git.url, payload.git.ref)
-  await git.clone(payload.git, { cwd })
+  await git.clone(payload.git, options)
 
   // Build the project
   console.log('[build] swift build:', payload.build.configuration, payload.build.targetName)
-  const { wasmBinaryPath } = await swift.build(payload.build, { cwd })
+  const { wasmBinaryPath } = await swift.build(payload.build, options)
+
+  // Pack the project
+  console.log('[build] swift pack:', wasmBinaryPath)
+  const { wasmPackagePath } = await swift.pack(wasmBinaryPath, options)
 
   // Upload the output
   console.log('[build] s3 upload:', payload.output.bucket, payload.output.key)
-  await s3.upload(wasmBinaryPath, payload.output)
+  await s3.upload(wasmPackagePath, payload.output)
 
   // Send sqs message
   console.log('[build] sqs success:', payload.finally.queueUrl)
