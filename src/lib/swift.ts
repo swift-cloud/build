@@ -35,12 +35,12 @@ export async function pack(wasmBinaryPath: string, options: SpawnOptions) {
   )
 
   // Zip up binary
-  await spawn('tar', ['-czvf', pkgName, '.'], {
+  await spawn('tar', ['-czvf', `../${pkgName}`, '.'], {
     cwd: appDir
   })
 
   return {
-    wasmPackagePath: `${appDir}/${pkgName}`
+    wasmPackagePath: `${pkgDir}/${pkgName}`
   }
 }
 
