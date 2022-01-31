@@ -29,7 +29,7 @@ RUN set -e; \
     && yum install -y yarn
 RUN yarn --version
 RUN set -e; \
-    SWIFT_BIN_URL="https://pick-n-shovel.s3.amazonaws.com/swift-wasm-DEVELOPMENT-SNAPSHOT-amazonlinux2_x86_64.tar.gz" \
+    SWIFT_BIN_URL="https://github.com/swiftwasm/swift/releases/download/swift-wasm-DEVELOPMENT-SNAPSHOT-2022-01-27-a/swift-wasm-DEVELOPMENT-SNAPSHOT-2022-01-27-a-amazonlinux2_x86_64.tar.gz" \
     && curl -fsSL "$SWIFT_BIN_URL" -o swift.tar.gz \
     && tar -xzf swift.tar.gz --directory / --strip-components=1 \
     && chmod -R o+r /usr/lib/swift \
