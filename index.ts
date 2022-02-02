@@ -39,7 +39,8 @@ const taskRole = new aws.iam.Role('swift-build-task-role', {
   assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsTasksPrincipal),
   managedPolicyArns: [
     aws.iam.ManagedPolicy.AmazonSQSFullAccess,
-    aws.iam.ManagedPolicy.AmazonS3FullAccess
+    aws.iam.ManagedPolicy.AmazonS3FullAccess,
+    aws.iam.ManagedPolicy.CloudWatchLogsFullAccess
   ]
 })
 
@@ -57,6 +58,15 @@ export const s3RoleAttachment = new aws.iam.RolePolicyAttachment(
   'swift-build-task-role-s3-attachment',
   {
     policyArn: aws.iam.ManagedPolicy.AmazonS3FullAccess,
+    role: taskRole
+  }
+)
+
+// Attach cloudwatch permissions
+export const logsRoleAttachment = new aws.iam.RolePolicyAttachment(
+  'swift-build-task-role-logs-attachment',
+  {
+    policyArn: aws.iam.ManagedPolicy.CloudWatchLogsFullAccess,
     role: taskRole
   }
 )
