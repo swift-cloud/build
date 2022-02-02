@@ -1,5 +1,7 @@
 import * as https from 'https'
 import * as aws from 'aws-sdk'
+import * as fastq from 'fastq'
+import type { queueAsPromised } from 'fastq'
 
 export const cloudwatchLogs = new aws.CloudWatchLogs({
   region: 'us-east-1',
@@ -73,19 +75,29 @@ export interface DeploymentLog {
 
 export class DeploymentLogger {
   readonly id: string
+  private q: queueAsPromised<LogEvent[]>
   private sequenceToken?: string
 
   constructor(id: string) {
     this.id = id
+    this.q = fastq.promise((task) => this._write(task), 1)
   }
 
-  async write(event: DeploymentLog | DeploymentLog[]) {
-    const logs: DeploymentLog[] = Array.isArray(event) ? event : [event]
-    const events = logs.map((log) => ({ timestamp: Date.now(), message: JSON.stringify(log) }))
+  private async _write(events: LogEvent[]) {
     const res = await writeDeploymentLogs(this.id, events, {
       sequenceToken: this.sequenceToken
     })
     this.sequenceToken = res.nextSequenceToken
+  }
+
+  async drain() {
+    return this.q.drained()
+  }
+
+  write(event: DeploymentLog | DeploymentLog[]) {
+    const logs: DeploymentLog[] = Array.isArray(event) ? event : [event]
+    const events = logs.map((log) => ({ timestamp: Date.now(), message: JSON.stringify(log) }))
+    this.q.push(events)
   }
 
   info(...text: string[]) {

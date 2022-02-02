@@ -41,6 +41,8 @@ export async function onMessage(message: BuildMessage) {
   } finally {
     // Clean up when complete
     await utils.remove({ cwd })
+    // Wait for logger
+    await logger.drain()
   }
 }
 
@@ -51,22 +53,26 @@ export async function build(
 ) {
   const startTime = Date.now()
 
-  await logger.info('[build] deployment:', payload.deployment.id)
+  logger.info('[build] deployment:', payload.deployment.id)
 
   // Clone the repo
-  await logger.info('[build] git clone:', payload.git.url, payload.git.ref)
+  logger.info('[build] git clone:', payload.git.url, payload.git.ref)
   await git.clone(payload.git, options)
 
   // Build the project
-  await logger.info('[build] swift build:', payload.build.configuration, payload.build.targetName)
-  const { wasmBinaryPath } = await swift.build(payload.build, options)
+  logger.info('[build] swift build:', payload.build.configuration, payload.build.targetName)
+  const { wasmBinaryPath } = await swift.build(payload.build, {
+    ...options,
+    onStdout: (text) => logger.info('[build] swift build:', text),
+    onStderr: (text) => logger.error('[build] swift build:', text)
+  })
 
   // Pack the project
-  await logger.info('[build] swift pack:', wasmBinaryPath)
+  logger.info('[build] swift pack:', wasmBinaryPath)
   const { wasmPackagePath } = await swift.pack(wasmBinaryPath, options)
 
   // Upload the output
-  await logger.info('[build] s3 upload:', payload.output.bucket, payload.output.key)
+  logger.info('[build] s3 upload:', payload.output.bucket, payload.output.key)
   await s3.upload(wasmPackagePath, payload.output)
 
   // Send sqs message
@@ -78,5 +84,5 @@ export async function build(
   })
 
   const totalTime = (Date.now() - startTime) / 1000
-  await logger.info('[build] complete:', totalTime.toFixed(0) + 's', '\n')
+  logger.info('[build] complete:', totalTime.toFixed(0) + 's', '\n')
 }
