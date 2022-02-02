@@ -1,5 +1,6 @@
 import { SQSHandler } from 'aws-lambda'
 import { BuildMessage } from './lib/types'
+import { DeploymentLogger } from './lib/cloudwatch-logs'
 import * as git from './lib/git'
 import * as s3 from './lib/s3'
 import * as sqs from './lib/sqs'
@@ -14,6 +15,8 @@ export const handler: SQSHandler = async (event) => {
 }
 
 export async function onMessage(message: BuildMessage) {
+  const logger = new DeploymentLogger(message.deployment.id)
+
   // Create working directory
   const cwd = `./build_${message.deployment.id}`
 
@@ -21,10 +24,9 @@ export async function onMessage(message: BuildMessage) {
     // Clean working directory
     await utils.clean({ cwd })
     // Build the project
-    await build(message, { cwd })
+    await build(message, { cwd }, logger)
   } catch (error: any) {
-    console.error('[build] error:')
-    console.error(error)
+    await logger.error(error.message ?? error.toString())
     // Send error message
     await sqs.sendMessage(message.finally, {
       project: message.project,
@@ -42,25 +44,29 @@ export async function onMessage(message: BuildMessage) {
   }
 }
 
-export async function build(payload: BuildMessage, options: { cwd: string }) {
+export async function build(
+  payload: BuildMessage,
+  options: { cwd: string },
+  logger: DeploymentLogger
+) {
   const startTime = Date.now()
 
-  console.log('[build] deployment:', payload.deployment.id)
+  await logger.info('[build] deployment:', payload.deployment.id)
 
   // Clone the repo
-  console.log('[build] git clone:', payload.git.url, payload.git.ref)
+  await logger.info('[build] git clone:', payload.git.url, payload.git.ref)
   await git.clone(payload.git, options)
 
   // Build the project
-  console.log('[build] swift build:', payload.build.configuration, payload.build.targetName)
+  await logger.info('[build] swift build:', payload.build.configuration, payload.build.targetName)
   const { wasmBinaryPath } = await swift.build(payload.build, options)
 
   // Pack the project
-  console.log('[build] swift pack:', wasmBinaryPath)
+  await logger.info('[build] swift pack:', wasmBinaryPath)
   const { wasmPackagePath } = await swift.pack(wasmBinaryPath, options)
 
   // Upload the output
-  console.log('[build] s3 upload:', payload.output.bucket, payload.output.key)
+  await logger.info('[build] s3 upload:', payload.output.bucket, payload.output.key)
   await s3.upload(wasmPackagePath, payload.output)
 
   // Send sqs message
@@ -72,5 +78,5 @@ export async function build(payload: BuildMessage, options: { cwd: string }) {
   })
 
   const totalTime = (Date.now() - startTime) / 1000
-  console.log('[build] complete:', totalTime.toFixed(0) + 's', '\n')
+  await logger.info('[build] complete:', totalTime.toFixed(0) + 's', '\n')
 }

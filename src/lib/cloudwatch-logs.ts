@@ -88,15 +88,18 @@ export class DeploymentLogger {
     this.sequenceToken = res.nextSequenceToken
   }
 
-  info(text: string) {
-    return this.write({ type: 'info', text })
+  info(...text: string[]) {
+    console.log(...text)
+    return this.write({ type: 'info', text: text.join(' ') })
   }
 
-  warn(text: string) {
-    return this.write({ type: 'warning', text })
+  warn(...text: string[]) {
+    console.warn(...text)
+    return this.write({ type: 'warning', text: text.join(' ') })
   }
 
-  error(text: string) {
-    return this.write({ type: 'error', text })
+  error(...text: string[]) {
+    console.error(...text)
+    return this.write({ type: 'error', text: text.join(' ') })
   }
 }
