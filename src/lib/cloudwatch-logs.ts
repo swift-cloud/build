@@ -97,7 +97,7 @@ export class DeploymentLogger {
   write(event: DeploymentLog | DeploymentLog[]) {
     const logs: DeploymentLog[] = Array.isArray(event) ? event : [event]
     const events = logs.map((log) => ({ timestamp: Date.now(), message: JSON.stringify(log) }))
-    this.q.push(events)
+    return this.q.push(events)
   }
 
   info(...text: string[]) {
