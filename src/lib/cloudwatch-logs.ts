@@ -66,6 +66,11 @@ export async function writeDeploymentLogs(
     .promise()
 }
 
+export interface DeploymentLog {
+  type: 'info' | 'warning' | 'error'
+  text: string
+}
+
 export class DeploymentLogger {
   readonly id: string
   private sequenceToken?: string
@@ -74,16 +79,24 @@ export class DeploymentLogger {
     this.id = id
   }
 
-  async write(event: string | LogEvent | LogEvent[]) {
-    const events: LogEvent[] =
-      typeof event === 'string'
-        ? [{ timestamp: Date.now(), message: event }]
-        : Array.isArray(event)
-        ? event
-        : [event]
+  async write(event: DeploymentLog | DeploymentLog[]) {
+    const logs: DeploymentLog[] = Array.isArray(event) ? event : [event]
+    const events = logs.map((log) => ({ timestamp: Date.now(), message: JSON.stringify(log) }))
     const res = await writeDeploymentLogs(this.id, events, {
       sequenceToken: this.sequenceToken
     })
     this.sequenceToken = res.nextSequenceToken
+  }
+
+  info(text: string) {
+    return this.write({ type: 'info', text })
+  }
+
+  warn(text: string) {
+    return this.write({ type: 'warning', text })
+  }
+
+  error(text: string) {
+    return this.write({ type: 'error', text })
   }
 }
