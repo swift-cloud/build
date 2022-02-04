@@ -5,7 +5,7 @@ import { BuildPayload } from './types'
 export async function build(payload: BuildPayload, options: SpawnOptions) {
   await spawn(
     'swift',
-    ['build', '-c', payload.configuration, '--triple', 'wasm32-unknown-wasi'],
+    ['build', '-c', payload.configuration, '-Xswiftc', '-Osize', '--triple', 'wasm32-unknown-wasi'],
     options
   )
 
