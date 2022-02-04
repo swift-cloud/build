@@ -3,14 +3,21 @@ import { spawn, SpawnOptions } from './spawn'
 import { BuildPayload } from './types'
 
 export async function build(payload: BuildPayload, options: SpawnOptions) {
+  // Build swift binary
   await spawn(
     'swift',
-    ['build', '-c', payload.configuration, '-Xswiftc', '-Osize', '--triple', 'wasm32-unknown-wasi'],
+    ['build', '-c', payload.configuration, '--triple', 'wasm32-unknown-wasi'],
     options
   )
 
+  // Build binary path
+  const localWasmPath = `.build/${payload.configuration}/${payload.targetName}.wasm`
+
+  // Optimize binary size
+  await spawn('wasm-opt', ['-O2', '-o', localWasmPath, localWasmPath], options)
+
   return {
-    wasmBinaryPath: `${options.cwd}/.build/${payload.configuration}/${payload.targetName}.wasm`
+    wasmBinaryPath: `${options.cwd}/${localWasmPath}`
   }
 }
 

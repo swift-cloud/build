@@ -1,40 +1,16 @@
-FROM amazon/aws-cli:latest as aws
-RUN aws --version
 
-FROM amazonlinux:2 as base
-RUN yum -y install \
-  binutils \
-  gcc \
-  git \
-  glibc-static \
-  gzip \
-  libbsd \
-  libcurl \
-  libedit \
-  libicu \
-  libsqlite \
-  libstdc++-static \
-  libuuid \
-  libxml2 \
-  tar \
-  tzdata \
-  zlib-devel
-RUN set -e; \
-    curl --silent --location https://rpm.nodesource.com/setup_16.x | bash - \
-    && yum -y install nodejs
+FROM ghcr.io/swiftwasm/swift:latest as base
+COPY --from=node:16 . .
 RUN node --version
-RUN set -e; \
-    curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo \
-    && rpm --import https://dl.yarnpkg.com/rpm/pubkey.gpg \
-    && yum install -y yarn
 RUN yarn --version
 RUN set -e; \
-    SWIFT_BIN_URL="https://github.com/swiftwasm/swift/releases/download/swift-wasm-DEVELOPMENT-SNAPSHOT-2022-01-27-a/swift-wasm-DEVELOPMENT-SNAPSHOT-2022-01-27-a-amazonlinux2_x86_64.tar.gz" \
-    && curl -fsSL "$SWIFT_BIN_URL" -o swift.tar.gz \
-    && tar -xzf swift.tar.gz --directory / --strip-components=1 \
-    && chmod -R o+r /usr/lib/swift \
-    && rm -rf swift.tar.gz
-RUN swift --version
+    BINARYEN_BIN_URL="https://github.com/WebAssembly/binaryen/releases/download/version_105/binaryen-version_105-x86_64-linux.tar.gz" \
+    && curl -fsSL "$BINARYEN_BIN_URL" -o binaryen.tar.gz \
+    && tar -xzf binaryen.tar.gz --directory / \
+    && cp -r /binaryen-version_105/* /usr/ \
+    && chmod -R o+r /usr/bin/wasm-opt \
+    && rm -rf binaryen.tar.gz binaryen-version_105
+RUN wasm-opt --version
 
 FROM base as app
 ADD src ./src
