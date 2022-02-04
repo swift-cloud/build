@@ -1,4 +1,7 @@
 
+FROM amazon/aws-cli:latest as aws
+RUN aws --version
+
 FROM ghcr.io/swiftwasm/swift:latest as base
 COPY --from=node:16 . .
 RUN node --version
