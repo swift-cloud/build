@@ -91,6 +91,9 @@ export class DeploymentLogger {
   }
 
   async drain() {
+    if (this.q.idle()) {
+      return
+    }
     return this.q.drained()
   }
 
