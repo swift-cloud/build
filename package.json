@@ -1,5 +1,6 @@
 {
   "name": "build",
+  "private": "true",
   "dependencies": {
     "@pulumi/aws": "^4.0.0",
     "@pulumi/awsx": "^0.30.0",

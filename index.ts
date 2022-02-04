@@ -25,7 +25,7 @@ const image = repo.buildAndPushImage({
   context: './',
   dockerfile: './Dockerfile',
   cacheFrom: {
-    stages: ['base', 'aws']
+    stages: ['base']
   }
 })
 
