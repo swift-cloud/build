@@ -1,6 +1,7 @@
 import { SQSHandler } from 'aws-lambda'
 import { BuildMessage } from './lib/types'
 import { DeploymentLogger } from './lib/cloudwatch-logs'
+import * as path from 'path'
 import * as git from './lib/git'
 import * as s3 from './lib/s3'
 import * as sqs from './lib/sqs'
@@ -18,7 +19,7 @@ export async function onMessage(message: BuildMessage) {
   const logger = new DeploymentLogger(message.deployment.id)
 
   // Create working directory
-  const cwd = `${process.cwd()}/build_${message.deployment.id}`
+  const cwd = path.join(process.cwd(), `build_${message.deployment.id}`)
 
   try {
     // Clean working directory
@@ -69,7 +70,7 @@ export async function build(
 
   // Conditionally optimize binary
   if (payload.build.optimization) {
-    logger.info('[build] swift optimize: this could take 60s...')
+    logger.info('[build] swift optimize: this could take 1-2 min...')
     await swift.optimize(wasmBinaryPath, options)
   }
 
