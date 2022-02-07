@@ -26,6 +26,7 @@ export interface GitPayload {
 export interface BuildPayload {
   targetName: string
   configuration: 'debug' | 'release'
+  optimization: boolean
 }
 
 export interface OutputPayload {

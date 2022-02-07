@@ -11,14 +11,16 @@ export async function build(payload: BuildPayload, options: SpawnOptions) {
   )
 
   // Build binary path
-  const localWasmPath = `.build/${payload.configuration}/${payload.targetName}.wasm`
-
-  // Optimize binary size
-  await spawn('wasm-opt', ['-O2', '-o', localWasmPath, localWasmPath], options)
+  const wasmBinaryPath = `${options.cwd}/.build/${payload.configuration}/${payload.targetName}.wasm`
 
   return {
-    wasmBinaryPath: `${options.cwd}/${localWasmPath}`
+    wasmBinaryPath: wasmBinaryPath
   }
+}
+
+export async function optimize(wasmBinaryPath: string, options: SpawnOptions) {
+  // Optimize binary size
+  await spawn('wasm-opt', ['-O2', '-o', wasmBinaryPath, wasmBinaryPath], options)
 }
 
 export async function pack(wasmBinaryPath: string, options: SpawnOptions) {

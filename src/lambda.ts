@@ -18,7 +18,7 @@ export async function onMessage(message: BuildMessage) {
   const logger = new DeploymentLogger(message.deployment.id)
 
   // Create working directory
-  const cwd = `./build_${message.deployment.id}`
+  const cwd = `${process.cwd()}/build_${message.deployment.id}`
 
   try {
     // Clean working directory
@@ -66,6 +66,12 @@ export async function build(
     onStdout: (text) => logger.info('[build] swift build:', text),
     onStderr: (text) => logger.error('[build] swift build:', text)
   })
+
+  // Conditionally optimize binary
+  if (payload.build.optimization) {
+    logger.info('[build] swift optimize: this could take 60s...')
+    await swift.optimize(wasmBinaryPath, options)
+  }
 
   // Pack the project
   logger.info('[build] swift pack:', wasmBinaryPath)
