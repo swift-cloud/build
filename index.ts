@@ -5,12 +5,8 @@ import * as awsx from '@pulumi/awsx'
 // Get current stack
 export const stack = pulumi.getStack()
 
-// Allocate a new VPC with the default settings:
-const vpc = new awsx.ec2.Vpc('swift-cloud', {
-  cidrBlock: '172.31.0.0/16',
-  subnets: [{ type: 'public' }],
-  numberOfAvailabilityZones: 3
-})
+// Get default vpc
+const vpc = awsx.ec2.Vpc.getDefault()
 
 // Create build sqs queue
 const queue = new aws.sqs.Queue(`build-${stack}`, {
