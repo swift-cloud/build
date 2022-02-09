@@ -9,7 +9,7 @@ export const stack = pulumi.getStack()
 const vpc = new awsx.ec2.Vpc('swift-cloud', {
   cidrBlock: '172.31.0.0/16',
   subnets: [{ type: 'public' }],
-  numberOfAvailabilityZones: 1
+  numberOfAvailabilityZones: 3
 })
 
 // Create build sqs queue
