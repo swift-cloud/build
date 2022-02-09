@@ -4,6 +4,7 @@ export interface BuildMessage {
   git: GitPayload
   build: BuildPayload
   output: OutputPayload
+  logs: LogsPayload
   finally: FinallyPayload
 }
 
@@ -32,6 +33,11 @@ export interface BuildPayload {
 export interface OutputPayload {
   bucket: string
   key: string
+}
+
+export interface LogsPayload {
+  group: string
+  stream: string
 }
 
 export interface FinallyPayload {

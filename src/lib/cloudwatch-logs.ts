@@ -10,31 +10,31 @@ export const cloudwatchLogs = new aws.CloudWatchLogs({
   }
 })
 
-export const logGroups = {
-  deployments: '/swift-cloud/deployments'
-}
-
-export async function createDeploymentLogStream(id: string) {
-  return cloudwatchLogs
-    .createLogStream({
-      logGroupName: logGroups.deployments,
-      logStreamName: id
-    })
-    .promise()
-}
-
 export interface LogEvent {
   timestamp: number
   message: string
 }
 
-export async function queryDeploymentLogs(id: string, props?: { nextToken?: string }) {
+export async function createDeploymentLogStream(props: { group: string; stream: string }) {
+  return cloudwatchLogs
+    .createLogStream({
+      logGroupName: props.group,
+      logStreamName: props.stream
+    })
+    .promise()
+}
+
+export async function queryDeploymentLogs(props: {
+  group: string
+  stream: string
+  nextToken?: string
+}) {
   const res = await cloudwatchLogs
     .getLogEvents({
-      logGroupName: logGroups.deployments,
-      logStreamName: id,
+      logGroupName: props.group,
+      logStreamName: props.stream,
       startFromHead: true,
-      nextToken: props?.nextToken
+      nextToken: props.nextToken
     })
     .promise()
   return {
@@ -44,24 +44,23 @@ export async function queryDeploymentLogs(id: string, props?: { nextToken?: stri
 }
 
 export async function writeDeploymentLogs(
-  id: string,
   events: LogEvent[],
-  props?: { sequenceToken?: string }
+  props: { group: string; stream: string; sequenceToken?: string }
 ) {
   const sequenceToken = await (props?.sequenceToken
     ? props.sequenceToken
     : cloudwatchLogs
         .describeLogStreams({
-          logGroupName: logGroups.deployments,
-          logStreamNamePrefix: id
+          logGroupName: props.group,
+          logStreamNamePrefix: props.stream
         })
         .promise()
         .then((res) => res.logStreams?.[0].uploadSequenceToken))
 
   return await cloudwatchLogs
     .putLogEvents({
-      logGroupName: logGroups.deployments,
-      logStreamName: id,
+      logGroupName: props.group,
+      logStreamName: props.stream,
       logEvents: events,
       sequenceToken: sequenceToken
     })
@@ -74,17 +73,21 @@ export interface DeploymentLog {
 }
 
 export class DeploymentLogger {
-  readonly id: string
+  readonly group: string
+  readonly stream: string
   private q: queueAsPromised<LogEvent[]>
   private sequenceToken?: string
 
-  constructor(id: string) {
-    this.id = id
+  constructor(props: { group: string; stream: string }) {
+    this.group = props.group
+    this.stream = props.stream
     this.q = fastq.promise((task) => this._write(task), 1)
   }
 
   private async _write(events: LogEvent[]) {
-    const res = await writeDeploymentLogs(this.id, events, {
+    const res = await writeDeploymentLogs(events, {
+      group: this.group,
+      stream: this.stream,
       sequenceToken: this.sequenceToken
     })
     this.sequenceToken = res.nextSequenceToken

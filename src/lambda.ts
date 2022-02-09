@@ -16,7 +16,7 @@ export const handler: SQSHandler = async (event) => {
 }
 
 export async function onMessage(message: BuildMessage) {
-  const logger = new DeploymentLogger(message.deployment.id)
+  const logger = new DeploymentLogger(message.logs)
 
   // Create working directory
   const cwd = path.join(process.cwd(), `build_${message.deployment.id}`)
