@@ -87,7 +87,8 @@ export async function build(
   await sqs.sendMessage(payload.finally, {
     project: payload.project,
     deployment: payload.deployment,
-    output: payload.output
+    output: payload.output,
+    logs: payload.logs
   })
 
   const totalTime = (Date.now() - startTime) / 1000
