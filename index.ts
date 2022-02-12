@@ -70,7 +70,7 @@ export const logsRoleAttachment = new aws.iam.RolePolicyAttachment(
 // Create container
 export const service = new awsx.ecs.FargateService('swift-build-service', {
   cluster,
-  desiredCount: 1,
+  desiredCount: 2,
   taskDefinitionArgs: {
     container: {
       image,
