@@ -75,7 +75,7 @@ export const service = new awsx.ecs.FargateService('swift-build-service', {
     container: {
       image,
       essential: true,
-      cpu: 1 * 1024,
+      cpu: 4 * 1024,
       environment: [{ name: 'SQS_QUEUE_URL', value: queue.url }]
     },
     taskRole
