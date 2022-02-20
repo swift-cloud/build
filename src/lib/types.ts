@@ -42,5 +42,6 @@ export interface LogsPayload {
 
 export interface FinallyPayload {
   queueUrl: string
-  body?: Record<string, unknown>
+  messageGroupId?: string
+  messageDeduplicationId?: string
 }

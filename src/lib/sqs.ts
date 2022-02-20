@@ -14,7 +14,9 @@ export async function sendMessage(payload: FinallyPayload, body: Record<string, 
   await sqs
     .sendMessage({
       QueueUrl: payload.queueUrl,
-      MessageBody: JSON.stringify({ ...body, ...payload.body })
+      MessageBody: JSON.stringify(body),
+      MessageGroupId: payload.messageGroupId,
+      MessageDeduplicationId: payload.messageDeduplicationId
     })
     .promise()
 }
