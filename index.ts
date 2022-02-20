@@ -10,6 +10,7 @@ const vpc = awsx.ec2.Vpc.getDefault()
 
 // Create build sqs queue
 const queue = new aws.sqs.Queue(`build-${stack}`, {
+  fifoQueue: true,
   visibilityTimeoutSeconds: 15 * 60
 })
 
