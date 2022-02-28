@@ -1,9 +1,9 @@
-FROM ubuntu:20.04 as base
+FROM ubuntu:20.04
 
-LABEL maintainer="SwiftWasm Maintainers <hello@swiftwasm.org>"
-LABEL Description="Docker Container for the SwiftWasm toolchain and SDK"
-LABEL org.opencontainers.image.source https://github.com/swiftwasm/swiftwasm-docker
+LABEL maintainer="Swift Cloud <hello@swift.cloud>"
+LABEL Description="Docker Container for the Swift Cloud build pipeline"
 
+# Install required deps for swift
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && apt-get -q update && \
     apt-get -q install -y \
     binutils \
@@ -23,6 +23,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && ap
     zlib1g-dev \
     && rm -r /var/lib/apt/lists/*
 
+# Install swift
 RUN set -e; \
     SWIFT_BIN_URL="https://swift-cloud-toolchains.s3.amazonaws.com/swift-wasm-DEVELOPMENT-SNAPSHOT-ubuntu20.04_x86_64.tar.gz" \
     && export DEBIAN_FRONTEND=noninteractive \
@@ -33,14 +34,17 @@ RUN set -e; \
     && rm -rf swift.tar.gz \
     && apt-get purge --auto-remove -y curl
 
+# Verify swift version
 RUN swift --version
 
+# Install Node.js
 COPY --from=node:16 . .
 
+# Verify node and yarn version
 RUN node --version
-
 RUN yarn --version
 
+# Install Binaryen
 RUN set -e; \
     BINARYEN_BIN_URL="https://github.com/WebAssembly/binaryen/releases/download/version_105/binaryen-version_105-x86_64-linux.tar.gz" \
     && curl -fsSL "$BINARYEN_BIN_URL" -o binaryen.tar.gz \
@@ -49,11 +53,14 @@ RUN set -e; \
     && chmod -R o+r /usr/bin/wasm-opt \
     && rm -rf binaryen.tar.gz binaryen-version_105
 
+# Verify binaryen version
 RUN wasm-opt --version
 
-FROM base as app
+# Install build app
 ADD src ./src
 COPY *.json *.lock ./
 RUN yarn install
 RUN yarn build
+
+# Set entry point
 CMD [ "node", "./bin/fargate.js" ]

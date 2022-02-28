@@ -20,10 +20,7 @@ const repo = new awsx.ecr.Repository('swift-cloud')
 // Build docker image
 const image = repo.buildAndPushImage({
   context: './',
-  dockerfile: './Dockerfile',
-  cacheFrom: {
-    stages: ['base']
-  }
+  dockerfile: './Dockerfile'
 })
 
 // Create service
