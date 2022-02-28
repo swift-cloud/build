@@ -25,7 +25,8 @@ const image = repo.buildAndPushImage({
 
 // Create service
 const cluster = new awsx.ecs.Cluster('swift-build', {
-  vpc
+  vpc,
+  capacityProviders: ['FARGATE_SPOT']
 })
 
 // Task role
@@ -68,12 +69,12 @@ export const logsRoleAttachment = new aws.iam.RolePolicyAttachment(
 // Create container
 export const service = new awsx.ecs.FargateService('swift-build-service', {
   cluster,
-  desiredCount: 2,
+  desiredCount: 4,
   taskDefinitionArgs: {
     container: {
       image,
       essential: true,
-      cpu: 4 * 1024,
+      cpu: 1024,
       environment: [{ name: 'SQS_QUEUE_URL', value: queue.url }]
     },
     taskRole
