@@ -11,13 +11,13 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && ap
     git \
     gnupg2 \
     libc6-dev \
-    libcurl4-openssl-dev \
+    libcurl4 \
     libedit2 \
     libgcc-9-dev \
-    libpython3.8 \
+    libpython2.7 \
     libsqlite3-0 \
     libstdc++-9-dev \
-    libxml2-dev \
+    libxml2 \
     libz3-dev \
     pkg-config \
     tzdata \
@@ -26,7 +26,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && ap
 
 # Install swift
 RUN set -e; \
-    SWIFT_BIN_URL="https://swift-cloud-toolchains.s3.amazonaws.com/swift-wasm-DEVELOPMENT-SNAPSHOT-ubuntu20.04_x86_64.tar.gz" \
+    SWIFT_BIN_URL="https://swift-cloud-toolchains.s3.amazonaws.com/swift-wasm-5.5-SNAPSHOT-2022-02-21-a-ubuntu20.04_x86_64.tar.gz" \
     && export DEBIAN_FRONTEND=noninteractive \
     && curl -fsSL "$SWIFT_BIN_URL" -o swift.tar.gz \
     && tar -xzf swift.tar.gz --directory / --strip-components=1 \
