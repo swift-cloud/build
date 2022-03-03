@@ -6,7 +6,7 @@ export async function build(payload: BuildPayload, options: SpawnOptions) {
   // Build swift binary
   await spawn(
     'swift',
-    ['build', '-c', payload.configuration, '--triple', 'wasm32-unknown-wasi'],
+    ['build', '-c', payload.configuration, '-Xswiftc', '-Osize', '--triple', 'wasm32-unknown-wasi'],
     options
   )
 
@@ -20,7 +20,7 @@ export async function build(payload: BuildPayload, options: SpawnOptions) {
 
 export async function optimize(wasmBinaryPath: string, options: SpawnOptions) {
   // Optimize binary size
-  await spawn('wasm-opt', ['-O2', '-o', wasmBinaryPath, wasmBinaryPath], options)
+  await spawn('wasm-opt', ['-Oz', '-o', wasmBinaryPath, wasmBinaryPath], options)
 }
 
 export async function pack(wasmBinaryPath: string, options: SpawnOptions) {
