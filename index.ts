@@ -69,12 +69,12 @@ export const logsRoleAttachment = new aws.iam.RolePolicyAttachment(
 // Create container
 export const service = new awsx.ecs.FargateService('swift-build-service', {
   cluster,
-  desiredCount: 4,
+  desiredCount: 2,
   taskDefinitionArgs: {
     container: {
       image,
       essential: true,
-      cpu: 1024,
+      cpu: 4 * 1024,
       environment: [{ name: 'SQS_QUEUE_URL', value: queue.url }]
     },
     taskRole
