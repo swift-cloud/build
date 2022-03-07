@@ -28,6 +28,7 @@ export interface BuildPayload {
   targetName: string
   configuration: 'debug' | 'release'
   optimization: boolean
+  rootDirectory?: string
 }
 
 export interface OutputPayload {

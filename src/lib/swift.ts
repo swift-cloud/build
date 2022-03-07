@@ -1,17 +1,27 @@
 import { mkdir, copyFile, writeFile } from 'fs/promises'
 import { spawn, SpawnOptions } from './spawn'
 import { BuildPayload } from './types'
+import * as path from 'path'
 
 export async function build(payload: BuildPayload, options: SpawnOptions) {
+  // Create working directory
+  const cwd = path.join(options.cwd, payload.rootDirectory ?? '.')
+
   // Build swift binary
   await spawn(
     'swift',
     ['build', '-c', payload.configuration, '-Xswiftc', '-Osize', '--triple', 'wasm32-unknown-wasi'],
-    options
+    {
+      ...options,
+      cwd
+    }
   )
 
   // Build binary path
-  const wasmBinaryPath = `${options.cwd}/.build/${payload.configuration}/${payload.targetName}.wasm`
+  const wasmBinaryPath = path.join(
+    cwd,
+    `.build/${payload.configuration}/${payload.targetName}.wasm`
+  )
 
   return {
     wasmBinaryPath: wasmBinaryPath
@@ -49,7 +59,7 @@ export async function pack(wasmBinaryPath: string, options: SpawnOptions) {
   })
 
   return {
-    wasmPackagePath: `${pkgDir}/${pkgName}`
+    wasmPackagePath: path.join(pkgDir, pkgName)
   }
 }
 
