@@ -26,7 +26,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && ap
 
 # Install swift
 RUN set -e; \
-    SWIFT_BIN_URL="https://swift-cloud-toolchains.s3.amazonaws.com/swift-wasm-5.5-SNAPSHOT-2022-02-21-a-ubuntu20.04_x86_64.tar.gz" \
+    SWIFT_BIN_URL="https://swift-cloud-toolchains.s3.amazonaws.com/swift-wasm-5.5-SNAPSHOT-2022-03-10-a-ubuntu20.04_x86_64.tar.gz" \
     && export DEBIAN_FRONTEND=noninteractive \
     && curl -fsSL "$SWIFT_BIN_URL" -o swift.tar.gz \
     && tar -xzf swift.tar.gz --directory / --strip-components=1 \
