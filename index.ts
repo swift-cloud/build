@@ -29,8 +29,13 @@ const cluster = new awsx.ecs.Cluster('swift-build', {
   capacityProviders: ['FARGATE', 'FARGATE_SPOT'],
   defaultCapacityProviderStrategies: [
     {
+      capacityProvider: 'FARGATE',
+      weight: 1,
+      base: 1
+    },
+    {
       capacityProvider: 'FARGATE_SPOT',
-      weight: 1
+      weight: 100
     }
   ]
 })
@@ -80,7 +85,7 @@ export const service = new awsx.ecs.FargateService('swift-build-service', {
     container: {
       image,
       essential: true,
-      cpu: 2 * 1024,
+      cpu: 1 * 1024,
       environment: [{ name: 'SQS_QUEUE_URL', value: queue.url }]
     },
     taskRole
