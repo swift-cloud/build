@@ -7,6 +7,13 @@ console.log('Listening to queue:', process.env.SQS_QUEUE_URL)
 
 let isProcessingMessage = false
 
+setInterval(() => {
+  if (isProcessingMessage) {
+    return
+  }
+  process.exit()
+}, 60 * 1000)
+
 const app = Consumer.create({
   queueUrl: process.env.SQS_QUEUE_URL,
   batchSize: 1,
@@ -18,8 +25,7 @@ const app = Consumer.create({
     } catch (err: any) {
       console.error(err.stderr ?? err.message)
     }
-    app.stop()
-    process.exit()
+    isProcessingMessage = false
   },
   sqs: new aws.SQS({
     region: 'us-east-1',
@@ -38,10 +44,3 @@ app.on('processing_error', (err: any) => {
 })
 
 app.start()
-
-setTimeout(() => {
-  if (isProcessingMessage) {
-    return
-  }
-  process.exit()
-}, 60 * 1000)
