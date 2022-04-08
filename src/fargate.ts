@@ -7,6 +7,7 @@ console.log('Listening to queue:', process.env.SQS_QUEUE_URL)
 
 const app = Consumer.create({
   queueUrl: process.env.SQS_QUEUE_URL,
+  batchSize: 1,
   handleMessage: async (message) => {
     try {
       const payload = JSON.parse(message.Body ?? '')
@@ -14,6 +15,8 @@ const app = Consumer.create({
     } catch (err: any) {
       console.error(err.stderr ?? err.message)
     }
+    app.stop()
+    process.exit()
   },
   sqs: new aws.SQS({
     region: 'us-east-1',
