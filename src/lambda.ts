@@ -27,7 +27,7 @@ export async function onMessage(message: BuildMessage) {
     // Build the project
     await build(message, { cwd }, logger)
   } catch (error: any) {
-    await logger.error(error.message ?? error.toString())
+    logger.error(error.message ?? error.toString())
     // Send error message
     await sqs.sendMessage(message.finally, {
       project: message.project,
