@@ -9,6 +9,8 @@ let isProcessingMessage = false
 
 let shouldExitImmediately = false
 
+let exitAfterTimeoutHandle: any = null
+
 async function handleMessage(message: aws.SQS.Message) {
   try {
     // Mark message processing
@@ -30,24 +32,14 @@ async function handleMessage(message: aws.SQS.Message) {
     if (shouldExitImmediately) {
       process.exit(0)
     }
+
+    // Set timeout triffer
+    exitAfterTimeout(5 * 60 * 1000)
   }
 }
 
 // Exit task 20 seconds after start up if we dont receive a task
-setTimeout(() => {
-  if (isProcessingMessage) {
-    return
-  }
-  process.exit(0)
-}, 20 * 1000)
-
-// Exit task after 5 minutes of no processed messages
-setInterval(() => {
-  if (isProcessingMessage) {
-    return
-  }
-  process.exit(0)
-}, 5 * 60 * 1000)
+exitAfterTimeout(20 * 1000)
 
 // Listen for messages on sqs queue
 const app = Consumer.create({
@@ -91,3 +83,14 @@ process.on('SIGTERM', () => {
   // Otherwise exit immediately
   process.exit(0)
 })
+
+function exitAfterTimeout(ms: number) {
+  clearTimeout(exitAfterTimeoutHandle)
+
+  exitAfterTimeoutHandle = setTimeout(() => {
+    if (isProcessingMessage) {
+      return
+    }
+    process.exit(0)
+  }, ms)
+}
