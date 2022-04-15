@@ -7,6 +7,12 @@ export async function build(payload: BuildPayload, options: SpawnOptions) {
   // Create working directory
   const cwd = path.join(options.cwd, payload.rootDirectory ?? '.')
 
+  // Log swift version
+  await spawn('swift', ['--version'], {
+    ...options,
+    cwd
+  })
+
   // Build swift binary
   await spawn(
     'swift',
