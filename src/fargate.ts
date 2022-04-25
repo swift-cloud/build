@@ -5,6 +5,8 @@ import * as lambda from './lambda'
 
 console.log('Listening to queue:', process.env.SQS_QUEUE_URL)
 
+const exitTimeout = 1 * 60 * 1000 // time to wait for a new task before exitting process
+
 let isProcessingMessage = false
 
 let shouldExitImmediately = false
@@ -34,7 +36,7 @@ async function handleMessage(message: aws.SQS.Message) {
     }
 
     // Set timeout triffer
-    exitAfterTimeout(5 * 60 * 1000)
+    exitAfterTimeout(exitTimeout)
   }
 }
 

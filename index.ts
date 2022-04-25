@@ -70,7 +70,7 @@ export const logsRoleAttachment = new aws.iam.RolePolicyAttachment(
 export const taskDefinition = new awsx.ecs.FargateTaskDefinition('swift-build-task', {
   container: {
     image,
-    cpu: 2 * 1024,
+    cpu: 4 * 1024,
     environment: [{ name: 'SQS_QUEUE_URL', value: queue.url }]
   },
   taskRole
