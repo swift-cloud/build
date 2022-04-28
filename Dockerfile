@@ -1,20 +1,18 @@
 FROM ubuntu:20.04
 
-LABEL maintainer="Swift Cloud <hello@swift.cloud>"
-LABEL Description="Docker Container for the Swift Cloud build pipeline"
+LABEL maintainer="SwiftWasm Maintainers <hello@swiftwasm.org>"
+LABEL Description="Docker Container for the SwiftWasm toolchain and SDK"
+LABEL org.opencontainers.image.source https://github.com/swiftwasm/swiftwasm-docker
 
-# Install required deps for swift
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && apt-get -q update && \
     apt-get -q install -y \
     binutils \
-    curl \
     git \
     gnupg2 \
     libc6-dev \
     libcurl4 \
     libedit2 \
     libgcc-9-dev \
-    libgd-dev \
     libpython2.7 \
     libsqlite3-0 \
     libstdc++-9-dev \
@@ -25,10 +23,14 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && ap
     zlib1g-dev \
     && rm -r /var/lib/apt/lists/*
 
-# Install swift
+ARG SWIFT_TAG=swift-wasm-5.6.0-RELEASE
+ENV SWIFT_PLATFORM_SUFFIX=ubuntu20.04_x86_64.tar.gz
+ENV SWIFT_TAG=$SWIFT_TAG
+
 RUN set -e; \
-    SWIFT_BIN_URL="https://swift-cloud-toolchains.s3.amazonaws.com/swift-wasm-5.6.0-RELEASE-ubuntu20.04_x86_64.tar.gz" \
+    SWIFT_BIN_URL="https://github.com/swiftwasm/swift/releases/download/$SWIFT_TAG/$SWIFT_TAG-$SWIFT_PLATFORM_SUFFIX" \
     && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -q update && apt-get -q install -y curl && rm -rf /var/lib/apt/lists/* \
     && curl -fsSL "$SWIFT_BIN_URL" -o swift.tar.gz \
     && tar -xzf swift.tar.gz --directory / --strip-components=1 \
     && chmod -R o+r /usr/lib/swift \
@@ -36,23 +38,6 @@ RUN set -e; \
 
 # Verify swift version
 RUN swift --version
-
-# Install Node.js
-RUN set -e; \
-    curl -fsSL "https://deb.nodesource.com/setup_16.x" | bash - \
-    && apt-get install -y nodejs
-
-# Verify node version
-RUN node --version
-
-# Install yarn
-RUN set -e; \
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt update && apt install yarn
-
-# Verify yarn version
-RUN yarn --version
 
 # Install Binaryen
 RUN set -e; \
@@ -66,11 +51,24 @@ RUN set -e; \
 # Verify binaryen version
 RUN wasm-opt --version
 
+# Install Node.js
+RUN set -e; \
+    curl -fsSL "https://deb.nodesource.com/setup_16.x" | bash - \
+    && apt-get install -y nodejs
+
+# Verify node version
+RUN node --version
+
+# Clean up
+RUN set -e; \
+    apt-get purge --auto-remove -y curl
+
 # Install build app
 ADD src ./src
-COPY *.json *.lock ./
-RUN yarn install --frozen-lockfile
-RUN yarn build
+COPY *.json ./
+RUN npm install
+RUN npm run build
+RUN npm install --production
 
 # Set entry point
 CMD [ "node", "./bin/fargate.js" ]
