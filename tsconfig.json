@@ -5,9 +5,10 @@
     "target": "es2020",
     "module": "commonjs",
     "moduleResolution": "node",
-    "sourceMap": true,
-    "experimentalDecorators": true,
-    "pretty": true,
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": false,
+    "pretty": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true

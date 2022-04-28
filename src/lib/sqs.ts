@@ -1,9 +1,8 @@
-import * as fs from 'fs'
 import * as https from 'https'
-import * as aws from 'aws-sdk'
+import SQS from 'aws-sdk/clients/sqs'
 import { FinallyPayload } from './types'
 
-const sqs = new aws.SQS({
+export const sqs = new SQS({
   region: 'us-east-1',
   httpOptions: {
     agent: new https.Agent({ keepAlive: true })

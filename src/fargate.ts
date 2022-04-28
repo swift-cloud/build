@@ -1,6 +1,6 @@
 import { Consumer } from 'sqs-consumer'
+import SQS from 'aws-sdk/clients/sqs'
 import * as https from 'https'
-import * as aws from 'aws-sdk'
 import * as lambda from './lambda'
 
 console.log('Listening to queue:', process.env.SQS_QUEUE_URL)
@@ -13,7 +13,7 @@ let shouldExitImmediately = false
 
 let exitAfterTimeoutHandle: any = null
 
-async function handleMessage(message: aws.SQS.Message) {
+async function handleMessage(message: SQS.Message) {
   try {
     // Mark message processing
     isProcessingMessage = true
@@ -48,7 +48,7 @@ const app = Consumer.create({
   queueUrl: process.env.SQS_QUEUE_URL,
   batchSize: 1,
   handleMessage,
-  sqs: new aws.SQS({
+  sqs: new SQS({
     region: 'us-east-1',
     httpOptions: {
       agent: new https.Agent({ keepAlive: true })

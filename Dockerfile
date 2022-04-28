@@ -64,11 +64,13 @@ RUN set -e; \
     apt-get purge --auto-remove -y curl
 
 # Install build app
-ADD src ./src
-COPY *.json ./
-RUN npm install
-RUN npm run build
-RUN npm install --production
+COPY src ./src
+COPY *.json *.ts ./
+RUN set -e; \
+    npm install && \
+    npm run build && \
+    npm cache clean --force && \
+    rm -rf node_modules src *.json *.ts
 
 # Set entry point
 CMD [ "node", "./bin/fargate.js" ]

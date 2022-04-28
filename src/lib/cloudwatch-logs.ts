@@ -1,9 +1,8 @@
 import * as https from 'https'
-import * as aws from 'aws-sdk'
 import * as fastq from 'fastq'
-import type { queueAsPromised } from 'fastq'
+import CloudWatchLogs from 'aws-sdk/clients/cloudwatchlogs'
 
-export const cloudwatchLogs = new aws.CloudWatchLogs({
+export const client = new CloudWatchLogs({
   region: 'us-east-1',
   httpOptions: {
     agent: new https.Agent({ keepAlive: true })
@@ -16,7 +15,7 @@ export interface LogEvent {
 }
 
 export async function createDeploymentLogStream(props: { group: string; stream: string }) {
-  return cloudwatchLogs
+  return client
     .createLogStream({
       logGroupName: props.group,
       logStreamName: props.stream
@@ -29,7 +28,7 @@ export async function queryDeploymentLogs(props: {
   stream: string
   nextToken?: string
 }) {
-  const res = await cloudwatchLogs
+  const res = await client
     .getLogEvents({
       logGroupName: props.group,
       logStreamName: props.stream,
@@ -49,7 +48,7 @@ export async function writeDeploymentLogs(
 ) {
   const sequenceToken = await (props?.sequenceToken
     ? props.sequenceToken
-    : cloudwatchLogs
+    : client
         .describeLogStreams({
           logGroupName: props.group,
           logStreamNamePrefix: props.stream
@@ -57,7 +56,7 @@ export async function writeDeploymentLogs(
         .promise()
         .then((res) => res.logStreams?.[0].uploadSequenceToken))
 
-  return await cloudwatchLogs
+  return await client
     .putLogEvents({
       logGroupName: props.group,
       logStreamName: props.stream,
@@ -75,7 +74,7 @@ export interface DeploymentLog {
 export class DeploymentLogger {
   readonly group: string
   readonly stream: string
-  private q: queueAsPromised<LogEvent[]>
+  private q: fastq.queueAsPromised<LogEvent[]>
   private sequenceToken?: string
 
   constructor(props: { group: string; stream: string }) {

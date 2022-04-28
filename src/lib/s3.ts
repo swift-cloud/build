@@ -1,9 +1,9 @@
 import * as fs from 'fs'
 import * as https from 'https'
-import * as aws from 'aws-sdk'
+import S3 from 'aws-sdk/clients/s3'
 import { OutputPayload } from './types'
 
-const s3 = new aws.S3({
+export const s3 = new S3({
   region: 'us-east-1',
   httpOptions: {
     agent: new https.Agent({ keepAlive: true })
