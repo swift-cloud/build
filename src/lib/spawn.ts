@@ -20,18 +20,18 @@ export async function spawn(
   return new Promise((resolve, reject) => {
     let stdout = ''
     let stderr = ''
-    const process = _spawn(command, args, options)
-    process.stdout?.on('data', (data) => {
+    const cmd = _spawn(command, args, options)
+    cmd.stdout?.on('data', (data) => {
       const chunk = data.toString('utf8')
       onStdout?.(chunk)
       stdout += chunk
     })
-    process.stderr?.on('data', (data) => {
+    cmd.stderr?.on('data', (data) => {
       const chunk = data.toString('utf8')
       onStderr?.(chunk)
       stderr += chunk
     })
-    process.on('close', (code) => {
+    cmd.on('close', (code) => {
       const result = {
         code,
         stdout: stdout || null,
@@ -43,5 +43,6 @@ export async function spawn(
         resolve(result)
       }
     })
+    cmd.on('error', reject)
   })
 }
