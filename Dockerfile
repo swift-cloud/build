@@ -33,7 +33,7 @@ RUN set -e; \
     BINARYEN_BIN_URL="https://github.com/WebAssembly/binaryen/releases/download/version_105/binaryen-version_105-x86_64-linux.tar.gz" \
     && curl -fsSL "$BINARYEN_BIN_URL" -o binaryen.tar.gz \
     && tar -xzf binaryen.tar.gz --directory / \
-    && cp -r /binaryen-version_105/* /usr/ \
+    && cp -r /binaryen-version_105/bin/wasm-opt /usr/bin \
     && chmod -R o+r /usr/bin/wasm-opt \
     && rm -rf binaryen.tar.gz binaryen-version_105
 
