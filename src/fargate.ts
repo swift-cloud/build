@@ -5,7 +5,11 @@ import * as lambda from './lambda'
 
 console.log('Listening to queue:', process.env.SQS_QUEUE_URL)
 
-const exitTimeout = 1 * 60 * 1000 // time to wait for a new task before exitting process
+// Time to wait for an initial task
+const initialExitTimeout = 20 * 1000
+
+// Time to wait for a new task _after_ completing a prior task
+const taskExitTimeout = 5 * 60 * 1000
 
 let isProcessingMessage = false
 
@@ -36,12 +40,12 @@ async function handleMessage(message: SQS.Message) {
     }
 
     // Set timeout triffer
-    exitAfterTimeout(exitTimeout)
+    exitAfterTimeout(taskExitTimeout)
   }
 }
 
 // Exit task 20 seconds after start up if we dont receive a task
-exitAfterTimeout(20 * 1000)
+exitAfterTimeout(initialExitTimeout)
 
 // Listen for messages on sqs queue
 const app = Consumer.create({
