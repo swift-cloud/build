@@ -1,4 +1,8 @@
-FROM ghcr.io/swiftwasm/swift:5.6
+FROM ghcr.io/swiftwasm/swift:5.6-focal
+
+LABEL maintainer="Andrew Barba <andrew@swift.cloud>"
+LABEL Description="Swift Cloud is the fastest way to build and deploy server side Swift applications."
+LABEL org.opencontainers.image.source https://github.com/swift-cloud/build
 
 # Install Binaryen
 RUN set -e; \
