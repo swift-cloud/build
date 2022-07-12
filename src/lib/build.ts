@@ -36,6 +36,36 @@ export async function swift(payload: BuildPayload, options: SpawnOptions): Promi
   }
 }
 
+export async function nodejs(payload: BuildPayload, options: SpawnOptions): Promise<BuildResult> {
+  // Create working directory
+  const cwd = path.join(options.cwd, payload.rootDirectory ?? '.')
+
+  // Log node version
+  await spawn('node', ['--version'], {
+    ...options,
+    cwd
+  })
+
+  // Install dependencies
+  await spawn('npm', ['install'], {
+    ...options,
+    cwd
+  })
+
+  // Build node binary
+  await spawn('npm', ['run', 'build'], {
+    ...options,
+    cwd
+  })
+
+  // Build binary path
+  const wasmBinaryPath = path.join(cwd, `bin/main.wasm`)
+
+  return {
+    wasmBinaryPath: wasmBinaryPath
+  }
+}
+
 export async function optimize(wasmBinaryPath: string, options: SpawnOptions) {
   // Optimize binary size
   await spawn('wasm-opt', ['-Oz', '-o', wasmBinaryPath, wasmBinaryPath], options)

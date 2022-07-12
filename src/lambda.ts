@@ -104,6 +104,14 @@ async function buildWasmBinary(
         onStderr: (text) => logger.error('[build] swift build:', text)
       })
     }
+    case 'nodejs': {
+      logger.info('[build] node build:', payload.build.configuration, payload.build.targetName)
+      return build.nodejs(payload.build, {
+        ...options,
+        onStdout: (text) => logger.info('[build] node build:', text),
+        onStderr: (text) => logger.error('[build] node build:', text)
+      })
+    }
     default:
       throw new Error(`Unsupported lanugage: ${payload.build.language}`)
   }
