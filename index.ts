@@ -2,6 +2,9 @@ import * as pulumi from '@pulumi/pulumi'
 import * as aws from '@pulumi/aws'
 import * as awsx from '@pulumi/awsx'
 
+// List of docker files
+const dockerFiles = ['swift-5.5', 'swift-5.6', 'swift-5.7']
+
 // Get current stack
 export const stack = pulumi.getStack()
 
@@ -9,20 +12,25 @@ export const stack = pulumi.getStack()
 const vpc = awsx.ec2.Vpc.getDefault()
 
 // Create build sqs queue
-const queue = new aws.sqs.Queue(`build-${stack}`, {
-  fifoQueue: true,
-  sqsManagedSseEnabled: true,
-  visibilityTimeoutSeconds: 15 * 60
-})
+const queues = dockerFiles.map(
+  (name) =>
+    new aws.sqs.Queue(`build-${stack}-${name}`, {
+      fifoQueue: true,
+      sqsManagedSseEnabled: true,
+      visibilityTimeoutSeconds: 15 * 60
+    })
+)
 
 // Create ECR repo
 const repo = new awsx.ecr.Repository('swift-cloud')
 
 // Build docker image
-const image = repo.buildAndPushImage({
-  context: './',
-  dockerfile: './Dockerfile'
-})
+const images = dockerFiles.map((name) =>
+  repo.buildAndPushImage({
+    context: './',
+    dockerfile: `./Dockerfile.${name}`
+  })
+)
 
 // Create service
 export const cluster = new awsx.ecs.Cluster('swift-build', {
@@ -68,11 +76,14 @@ export const logsRoleAttachment = new aws.iam.RolePolicyAttachment(
 )
 
 // Create task definition
-export const taskDefinition = new awsx.ecs.FargateTaskDefinition('swift-build-task', {
-  container: {
-    image,
-    cpu: 4 * 1024,
-    environment: [{ name: 'SQS_QUEUE_URL', value: queue.url }]
-  },
-  taskRole
-})
+export const taskDefinitions = images.map(
+  (image, index) =>
+    new awsx.ecs.FargateTaskDefinition(`swift-build-task-${dockerFiles[index]}`, {
+      container: {
+        image,
+        cpu: 4 * 1024,
+        environment: [{ name: 'SQS_QUEUE_URL', value: queues[index].url }]
+      },
+      taskRole
+    })
+)
