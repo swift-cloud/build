@@ -25,6 +25,8 @@ export interface GitPayload {
 }
 
 export interface BuildPayload {
+  language: 'swift' | 'nodejs' | 'rust' | 'go'
+  languageVersion: string
   targetName: string
   configuration: 'debug' | 'release'
   optimization: boolean
