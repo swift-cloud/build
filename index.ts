@@ -12,11 +12,14 @@ export const stack = pulumi.getStack()
 const vpc = awsx.ec2.Vpc.getDefault()
 
 // Create build sqs queue
-const queue = new aws.sqs.Queue(`build-${stack}`, {
-  fifoQueue: true,
-  sqsManagedSseEnabled: true,
-  visibilityTimeoutSeconds: 15 * 60
-})
+const queues = dockerFiles.map(
+  (name) =>
+    new aws.sqs.Queue(`build-${stack}-${name}`, {
+      fifoQueue: true,
+      sqsManagedSseEnabled: true,
+      visibilityTimeoutSeconds: 15 * 60
+    })
+)
 
 // Create ECR repo
 const repo = new awsx.ecr.Repository('swift-cloud')
@@ -79,7 +82,7 @@ export const taskDefinitions = images.map(
       container: {
         image,
         cpu: 4 * 1024,
-        environment: [{ name: 'SQS_QUEUE_URL', value: queue.url }]
+        environment: [{ name: 'SQS_QUEUE_URL', value: queues[index].url }]
       },
       taskRole
     })
