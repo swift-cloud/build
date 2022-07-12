@@ -6,6 +6,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": false,
+    "declaration": true,
     "esModuleInterop": true,
     "experimentalDecorators": false,
     "pretty": false,

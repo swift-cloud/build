@@ -3,7 +3,9 @@ import { spawn, SpawnOptions } from './spawn'
 import { BuildPayload } from './types'
 import * as path from 'path'
 
-export async function build(payload: BuildPayload, options: SpawnOptions) {
+export type BuildResult = { wasmBinaryPath: string }
+
+export async function swift(payload: BuildPayload, options: SpawnOptions): Promise<BuildResult> {
   // Create working directory
   const cwd = path.join(options.cwd, payload.rootDirectory ?? '.')
 
@@ -39,7 +41,7 @@ export async function optimize(wasmBinaryPath: string, options: SpawnOptions) {
   await spawn('wasm-opt', ['-Oz', '-o', wasmBinaryPath, wasmBinaryPath], options)
 }
 
-export async function pack(wasmBinaryPath: string, options: SpawnOptions) {
+export async function pack(payload: BuildPayload, wasmBinaryPath: string, options: SpawnOptions) {
   const pkgDir = `${options.cwd}/pkg`
   const appDir = `${pkgDir}/app`
   const binDir = `${appDir}/bin`
@@ -56,7 +58,7 @@ export async function pack(wasmBinaryPath: string, options: SpawnOptions) {
   // Write fastly.toml necessary for deploy
   await writeFile(
     `${appDir}/fastly.toml`,
-    ['language = "swift"', 'manifest_version = 2', 'name = "app"'].join('\n')
+    [`language = "${payload.language}"`, 'manifest_version = 2', 'name = "app"'].join('\n')
   )
 
   // Zip up binary
@@ -67,8 +69,4 @@ export async function pack(wasmBinaryPath: string, options: SpawnOptions) {
   return {
     wasmPackagePath: path.join(pkgDir, pkgName)
   }
-}
-
-export async function version(options: SpawnOptions) {
-  return spawn('swift', ['--version'], options)
 }

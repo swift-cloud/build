@@ -5,7 +5,7 @@ import * as path from 'path'
 import * as git from './lib/git'
 import * as s3 from './lib/s3'
 import * as sqs from './lib/sqs'
-import * as swift from './lib/swift'
+import * as build from './lib/build'
 import * as utils from './lib/utils'
 
 export const handler: SQSHandler = async (event) => {
@@ -25,7 +25,7 @@ export async function onMessage(message: BuildMessage) {
     // Clean working directory
     await utils.clean({ cwd })
     // Build the project
-    await build(message, { cwd }, logger)
+    await buildProject(message, { cwd }, logger)
   } catch (error: any) {
     logger.error(error.message ?? error.toString())
     // Send error message
@@ -47,7 +47,7 @@ export async function onMessage(message: BuildMessage) {
   }
 }
 
-export async function build(
+export async function buildProject(
   payload: BuildMessage,
   options: { cwd: string },
   logger: DeploymentLogger
@@ -61,22 +61,17 @@ export async function build(
   await git.clone(payload.git, options)
 
   // Build the project
-  logger.info('[build] swift build:', payload.build.configuration, payload.build.targetName)
-  const { wasmBinaryPath } = await swift.build(payload.build, {
-    ...options,
-    onStdout: (text) => logger.info('[build] swift build:', text),
-    onStderr: (text) => logger.error('[build] swift build:', text)
-  })
+  const { wasmBinaryPath } = await buildWasmBinary(payload, options, logger)
 
   // Conditionally optimize binary
   if (payload.build.optimization) {
     logger.info('[build] swift optimize: this could take 1-2 min...')
-    await swift.optimize(wasmBinaryPath, options)
+    await build.optimize(wasmBinaryPath, options)
   }
 
   // Pack the project
   logger.info('[build] swift pack:', wasmBinaryPath)
-  const { wasmPackagePath } = await swift.pack(wasmBinaryPath, options)
+  const { wasmPackagePath } = await build.pack(payload.build, wasmBinaryPath, options)
 
   // Upload the output
   logger.info('[build] s3 upload:', payload.output.bucket, payload.output.key)
@@ -93,4 +88,23 @@ export async function build(
 
   const totalTime = (Date.now() - startTime) / 1000
   logger.info('[build] complete:', totalTime.toFixed(0) + 's', '\n')
+}
+
+async function buildWasmBinary(
+  payload: BuildMessage,
+  options: { cwd: string },
+  logger: DeploymentLogger
+): Promise<build.BuildResult> {
+  switch (payload.build.language) {
+    case 'swift': {
+      logger.info('[build] swift build:', payload.build.configuration, payload.build.targetName)
+      return build.swift(payload.build, {
+        ...options,
+        onStdout: (text) => logger.info('[build] swift build:', text),
+        onStderr: (text) => logger.error('[build] swift build:', text)
+      })
+    }
+    default:
+      throw new Error(`Unsupported lanugage: ${payload.build.language}`)
+  }
 }

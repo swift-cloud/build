@@ -20,7 +20,7 @@
     "typescript": "^4.7.4"
   },
   "scripts": {
-    "build": "ts-node -T ./esbuild.ts",
+    "build": "tsc -emitDeclarationOnly && ts-node -T ./esbuild.ts",
     "ts": "ts-node -T"
   }
 }
