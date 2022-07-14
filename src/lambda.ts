@@ -65,7 +65,7 @@ export async function buildProject(
 
   // Conditionally optimize binary
   if (payload.build.optimization) {
-    logger.info('[build] swift optimize: this could take 1-2 min...')
+    logger.info('[build] wasm-opt: this could take 1-2 min...')
     await build.optimize(wasmBinaryPath, options)
   }
 
