@@ -41,7 +41,7 @@ export const cluster = new awsx.ecs.Cluster('swift-build', {
 // Create s3 write policy
 const s3Policy = new aws.iam.Policy('swift-build-s3-write-only', {
   description: 'Policy to put objects into the artifacts s3 bucket',
-  policy: JSON.stringify({
+  policy: {
     Version: '2012-10-17',
     Statement: [
       {
@@ -50,13 +50,13 @@ const s3Policy = new aws.iam.Policy('swift-build-s3-write-only', {
         Resource: ['arn:aws:s3:::prod-swift-cloud-api-stac-artifactsbucket70f686f6-4negqqu8x5bo/*']
       }
     ]
-  })
+  }
 })
 
 // Create sqs policy
 const sqsPolicy = new aws.iam.Policy('swift-build-sqs-read-delete-send', {
   description: 'Policy to read and delete messages from sqs',
-  policy: JSON.stringify({
+  policy: {
     Version: '2012-10-17',
     Statement: [
       {
@@ -73,7 +73,7 @@ const sqsPolicy = new aws.iam.Policy('swift-build-sqs-read-delete-send', {
         ]
       }
     ]
-  })
+  }
 })
 
 // Task role
