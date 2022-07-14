@@ -22,7 +22,13 @@ export async function spawn(
     let stderr = ''
     const cmd = _spawn(command, args, {
       ...options,
-      env: {}
+      env: {
+        HOME: process.env.HOME,
+        PATH: process.env.PATH,
+        PWD: process.env.PWD,
+        LANG: process.env.LANG,
+        USER: process.env.USER
+      }
     })
     cmd.stdout?.on('data', (data) => {
       const chunk = data.toString('utf8')
