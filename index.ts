@@ -38,12 +38,27 @@ export const cluster = new awsx.ecs.Cluster('swift-build', {
   capacityProviders: ['FARGATE', 'FARGATE_SPOT']
 })
 
+// Create s3 write policy
+const s3WritePolicy = new aws.iam.Policy('swift-build-s3-write-only', {
+  description: 'Policy to put objects into the artifacts s3 bucket',
+  policy: JSON.stringify({
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Action: ['s3:PutObject'],
+        Resource: ['arn:aws:s3:::prod-swift-cloud-api-stac-artifactsbucket70f686f6-4negqqu8x5bo/*']
+      }
+    ]
+  })
+})
+
 // Task role
 const taskRole = new aws.iam.Role('swift-build-task-role', {
   assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsTasksPrincipal),
   managedPolicyArns: [
+    s3WritePolicy.arn,
     aws.iam.ManagedPolicy.AmazonSQSFullAccess,
-    aws.iam.ManagedPolicy.AmazonS3FullAccess,
     aws.iam.ManagedPolicy.CloudWatchLogsFullAccess
   ]
 })
@@ -61,7 +76,7 @@ export const sqsRoleAttachment = new aws.iam.RolePolicyAttachment(
 export const s3RoleAttachment = new aws.iam.RolePolicyAttachment(
   'swift-build-task-role-s3-attachment',
   {
-    policyArn: aws.iam.ManagedPolicy.AmazonS3FullAccess,
+    policyArn: s3WritePolicy.arn,
     role: taskRole
   }
 )
