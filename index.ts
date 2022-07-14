@@ -39,7 +39,7 @@ export const cluster = new awsx.ecs.Cluster('swift-build', {
 })
 
 // Create s3 write policy
-const s3WritePolicy = new aws.iam.Policy('swift-build-s3-write-only', {
+const s3Policy = new aws.iam.Policy('swift-build-s3-write-only', {
   description: 'Policy to put objects into the artifacts s3 bucket',
   policy: JSON.stringify({
     Version: '2012-10-17',
@@ -53,21 +53,40 @@ const s3WritePolicy = new aws.iam.Policy('swift-build-s3-write-only', {
   })
 })
 
+// Create sqs policy
+const sqsPolicy = new aws.iam.Policy('swift-build-sqs-read-delete-send', {
+  description: 'Policy to read and delete messages from sqs',
+  policy: JSON.stringify({
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Action: ['sqs:ReceiveMessage', 'sqs:DeleteMessage'],
+        Resource: queues.map((queue) => queue.arn)
+      },
+      {
+        Effect: 'Allow',
+        Action: ['sqs:SendMessage'],
+        Resource: [
+          'arn:aws:sqs:us-east-1:172469817718:dev-swift-cloud-BuildQueue.fifo',
+          'arn:aws:sqs:us-east-1:172469817718:prod-swift-cloud-BuildQueue.fifo'
+        ]
+      }
+    ]
+  })
+})
+
 // Task role
 const taskRole = new aws.iam.Role('swift-build-task-role', {
   assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsTasksPrincipal),
-  managedPolicyArns: [
-    s3WritePolicy.arn,
-    aws.iam.ManagedPolicy.AmazonSQSFullAccess,
-    aws.iam.ManagedPolicy.CloudWatchLogsFullAccess
-  ]
+  managedPolicyArns: [s3Policy.arn, sqsPolicy.arn, aws.iam.ManagedPolicy.CloudWatchLogsFullAccess]
 })
 
 // Attach sqs permissions
 export const sqsRoleAttachment = new aws.iam.RolePolicyAttachment(
   'swift-build-task-role-sqs-attachment',
   {
-    policyArn: aws.iam.ManagedPolicy.AmazonSQSFullAccess,
+    policyArn: sqsPolicy.arn,
     role: taskRole
   }
 )
@@ -76,7 +95,7 @@ export const sqsRoleAttachment = new aws.iam.RolePolicyAttachment(
 export const s3RoleAttachment = new aws.iam.RolePolicyAttachment(
   'swift-build-task-role-s3-attachment',
   {
-    policyArn: s3WritePolicy.arn,
+    policyArn: s3Policy.arn,
     role: taskRole
   }
 )
