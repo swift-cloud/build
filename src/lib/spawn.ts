@@ -20,7 +20,10 @@ export async function spawn(
   return new Promise((resolve, reject) => {
     let stdout = ''
     let stderr = ''
-    const cmd = _spawn(command, args, options)
+    const cmd = _spawn(command, args, {
+      ...options,
+      env: {}
+    })
     cmd.stdout?.on('data', (data) => {
       const chunk = data.toString('utf8')
       onStdout?.(chunk)
