@@ -47,7 +47,10 @@ const s3Policy = new aws.iam.Policy('swift-build-s3-write-only', {
       {
         Effect: 'Allow',
         Action: ['s3:PutObject'],
-        Resource: ['arn:aws:s3:::prod-swift-cloud-api-stac-artifactsbucket70f686f6-4negqqu8x5bo/*']
+        Resource: [
+          'arn:aws:s3:::prod-swift-cloud-api-stac-artifactsbucket70f686f6-4negqqu8x5bo/*',
+          'arn:aws:s3:::dev-swift-cloud-api-stack-artifactsbucket70f686f6-jlbt8mnklu1n/*'
+        ]
       }
     ]
   }
