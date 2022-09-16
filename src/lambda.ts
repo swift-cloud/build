@@ -112,6 +112,14 @@ async function buildWasmBinary(
         onStderr: (text) => logger.error('[build] node build:', text)
       })
     }
+    case 'rust': {
+      logger.info('[build] cargo build:', payload.build.configuration, payload.build.targetName)
+      return build.rust(payload.build, {
+        ...options,
+        onStdout: (text) => logger.info('[build] cargo build:', text),
+        onStderr: (text) => logger.error('[build] cargo build:', text)
+      })
+    }
     default:
       throw new Error(`Unsupported lanugage: ${payload.build.language}`)
   }
