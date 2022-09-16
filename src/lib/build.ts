@@ -5,6 +5,30 @@ import * as path from 'path'
 
 export type BuildResult = { wasmBinaryPath: string }
 
+export async function go(payload: BuildPayload, options: SpawnOptions): Promise<BuildResult> {
+  // Create working directory
+  const cwd = path.join(options.cwd, payload.rootDirectory ?? '.')
+
+  // Log go version
+  await spawn('go', ['version'], {
+    ...options,
+    cwd
+  })
+
+  // Build go binary
+  await spawn('go', ['build', '-o', 'bin/main.wasm'], {
+    ...options,
+    cwd
+  })
+
+// Build binary path
+const wasmBinaryPath = path.join(cwd, `bin/main.wasm`)
+
+  return {
+    wasmBinaryPath: wasmBinaryPath
+  }
+}
+
 export async function swift(payload: BuildPayload, options: SpawnOptions): Promise<BuildResult> {
   // Create working directory
   const cwd = path.join(options.cwd, payload.rootDirectory ?? '.')

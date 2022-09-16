@@ -96,6 +96,14 @@ async function buildWasmBinary(
   logger: DeploymentLogger
 ): Promise<build.BuildResult> {
   switch (payload.build.language) {
+    case 'go': {
+      logger.info('[build] go build:', payload.build.configuration, payload.build.targetName)
+      return build.go(payload.build, {
+        ...options,
+        onStdout: (text) => logger.info('[build] go build:', text),
+        onStderr: (text) => logger.error('[build] go build:', text)
+      })
+    }
     case 'swift': {
       logger.info('[build] swift build:', payload.build.configuration, payload.build.targetName)
       return build.swift(payload.build, {

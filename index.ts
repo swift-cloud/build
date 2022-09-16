@@ -4,6 +4,7 @@ import * as awsx from '@pulumi/awsx'
 
 // List of docker files
 const dockerFiles = [
+  'go-1_x',
   'nodejs-16_x',
   'nodejs-18_x',
   'rust-1_x',
