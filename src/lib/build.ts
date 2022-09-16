@@ -66,6 +66,30 @@ export async function nodejs(payload: BuildPayload, options: SpawnOptions): Prom
   }
 }
 
+export async function rust(payload: BuildPayload, options: SpawnOptions): Promise<BuildResult> {
+  // Create working directory
+  const cwd = path.join(options.cwd, payload.rootDirectory ?? '.')
+
+  // Log node version
+  await spawn('cargo', ['--version'], {
+    ...options,
+    cwd
+  })
+
+  // Build rust app
+  await spawn('cargo', ['build', '--release', '--target', 'wasm32-wasi'], {
+    ...options,
+    cwd
+  })
+
+  // Build binary path
+  const wasmBinaryPath = path.join(cwd, `target/wasm32-wasi/release/rust-hello-world.wasm`)
+
+  return {
+    wasmBinaryPath: wasmBinaryPath
+  }
+}
+
 export async function optimize(wasmBinaryPath: string, options: SpawnOptions) {
   // Optimize binary size
   await spawn('wasm-opt', ['-Oz', '-o', wasmBinaryPath, wasmBinaryPath], options)

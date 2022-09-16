@@ -7,7 +7,7 @@ LABEL org.opencontainers.image.source https://github.com/swift-cloud/build
 # Install rust wasm
 RUN set -e; \
     rustup toolchain add stable \
-    && rustup target add wasm32-wasi --toolchain stable62
+    && rustup target add wasm32-wasi --toolchain stable
 
 # Install Binaryen
 RUN set -e; \

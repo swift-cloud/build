@@ -3,7 +3,14 @@ import * as aws from '@pulumi/aws'
 import * as awsx from '@pulumi/awsx'
 
 // List of docker files
-const dockerFiles = ['nodejs-16_x', 'nodejs-18_x', 'rust-1', 'swift-5_5', 'swift-5_6', 'swift-5_7']
+const dockerFiles = [
+  'nodejs-16_x',
+  'nodejs-18_x',
+  'rust-1_x',
+  'swift-5_5',
+  'swift-5_6',
+  'swift-5_7'
+]
 
 // Get current stack
 export const stack = pulumi.getStack()
