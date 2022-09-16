@@ -77,13 +77,16 @@ export async function rust(payload: BuildPayload, options: SpawnOptions): Promis
   })
 
   // Build rust app
-  await spawn('cargo', ['build', '--release', '--target', 'wasm32-wasi'], {
+  await spawn('cargo', ['build', `--${payload.configuration}`, '--target', 'wasm32-wasi'], {
     ...options,
     cwd
   })
 
   // Build binary path
-  const wasmBinaryPath = path.join(cwd, `target/wasm32-wasi/release/rust-hello-world.wasm`)
+  const wasmBinaryPath = path.join(
+    cwd,
+    `target/wasm32-wasi/${payload.configuration}/${payload.targetName}.wasm`
+  )
 
   return {
     wasmBinaryPath: wasmBinaryPath
