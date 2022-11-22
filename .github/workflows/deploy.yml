@@ -10,11 +10,11 @@ jobs:
     name: Update
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
           cache: npm
 
       - name: Configure AWS Credentials
@@ -29,6 +29,6 @@ jobs:
       - uses: pulumi/actions@v3
         with:
           command: up
-          stack-name: swift-cloud/prod
+          stack-name: swift-cloud/build/prod
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
