@@ -41,14 +41,14 @@ RUN swift --version
 
 # Install Binaryen
 RUN set -e; \
-    BINARYEN_BIN_URL="https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz" \
+    BINARYEN_BIN_URL="https://github.com/WebAssembly/binaryen/releases/download/version_111/binaryen-version_111-x86_64-linux.tar.gz" \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -q update && apt-get -q install -y curl && rm -rf /var/lib/apt/lists/* \
     && curl -fsSL "$BINARYEN_BIN_URL" -o binaryen.tar.gz \
     && tar -xzf binaryen.tar.gz --directory / \
-    && cp -r /binaryen-version_110/bin/wasm-opt /usr/bin \
+    && cp -r /binaryen-version_111/bin/wasm-opt /usr/bin \
     && chmod -R o+r /usr/bin/wasm-opt \
-    && rm -rf binaryen.tar.gz binaryen-version_110 \
+    && rm -rf binaryen.tar.gz binaryen-version_111 \
     && apt-get purge --auto-remove -y curl \
     && wasm-opt --version
 
@@ -56,7 +56,7 @@ RUN set -e; \
 RUN set -e; \
     export DEBIAN_FRONTEND=noninteractive \
     && apt-get -q update && apt-get -q install -y curl && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL "https://deb.nodesource.com/setup_16.x" | bash - \
+    && curl -fsSL "https://deb.nodesource.com/setup_18.x" | bash - \
     && apt-get install -y nodejs \
     && apt-get purge --auto-remove -y curl \
     && node --version
