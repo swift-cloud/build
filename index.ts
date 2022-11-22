@@ -13,7 +13,7 @@ const dockerFiles = [
 ]
 
 // Save latest swift index
-const latestSwiftIndex = dockerFiles[dockerFiles.length - 1]
+const latestSwiftIndex = dockerFiles.length - 1
 
 // Get current stack
 export const stack = pulumi.getStack()
