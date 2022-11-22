@@ -129,7 +129,12 @@ export const taskDefinitions = images.map(
       container: {
         image,
         cpu: 4 * 1024,
-        environment: [{ name: 'SQS_QUEUE_URL', value: queues[index].url }]
+        environment: [
+          {
+            name: 'SQS_QUEUE_URL',
+            value: queues[index].url
+          }
+        ]
       },
       taskRole
     })
@@ -144,7 +149,16 @@ export const service = new awsx.ecs.FargateService('swift-build-service-5_7', {
     container: {
       image: images[latestSwiftIndex],
       cpu: 4 * 1024,
-      environment: [{ name: 'SQS_QUEUE_URL', value: queues[latestSwiftIndex].url }]
+      environment: [
+        {
+          name: 'SQS_QUEUE_URL',
+          value: queues[latestSwiftIndex].url
+        },
+        {
+          name: 'TASK_KEEP_ALIVE',
+          value: 'true'
+        }
+      ]
     }
   }
 })

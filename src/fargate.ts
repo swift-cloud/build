@@ -5,6 +5,9 @@ import * as lambda from './lambda'
 
 console.log('Listening to queue:', process.env.SQS_QUEUE_URL)
 
+// Check for a long lived process
+const taskKeepAlive = process.env.TASK_KEEP_ALIVE === 'true'
+
 // Time to wait for an initial task
 const initialExitTimeout = 20 * 1000
 
@@ -91,6 +94,10 @@ process.on('SIGTERM', () => {
 })
 
 function exitAfterTimeout(ms: number) {
+  if (taskKeepAlive) {
+    return
+  }
+
   clearTimeout(exitAfterTimeoutHandle)
 
   exitAfterTimeoutHandle = setTimeout(() => {
