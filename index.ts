@@ -143,12 +143,12 @@ export const taskDefinitions = images.map(
 // Create a service for long running operations
 export const service = new awsx.ecs.FargateService('swift-build-service-5_7', {
   cluster,
-  desiredCount: 1,
+  desiredCount: 2,
   taskDefinitionArgs: {
     taskRole,
     container: {
       image: images[latestSwiftIndex],
-      cpu: 4 * 1024,
+      cpu: 2 * 1024,
       environment: [
         {
           name: 'SQS_QUEUE_URL',
