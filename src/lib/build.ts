@@ -26,7 +26,7 @@ export async function swift(payload: BuildPayload, options: SpawnOptions): Promi
       '-Osize',
       '--triple',
       'wasm32-unknown-wasi',
-      '--target',
+      '--product',
       payload.targetName
     ],
     {
