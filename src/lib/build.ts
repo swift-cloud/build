@@ -18,7 +18,17 @@ export async function swift(payload: BuildPayload, options: SpawnOptions): Promi
   // Build swift binary
   await spawn(
     'swift',
-    ['build', '-c', payload.configuration, '-Xswiftc', '-Osize', '--triple', 'wasm32-unknown-wasi'],
+    [
+      'build',
+      '-c',
+      payload.configuration,
+      '-Xswiftc',
+      '-Osize',
+      '--triple',
+      'wasm32-unknown-wasi',
+      '--target',
+      payload.targetName
+    ],
     {
       ...options,
       cwd
