@@ -18,9 +18,6 @@ const latestSwiftIndex = dockerFiles.length - 1
 // Get current stack
 export const stack = pulumi.getStack()
 
-// Get default vpc
-const vpc = awsx.ec2.Vpc.getDefault()
-
 // Create build sqs queue
 const queues = dockerFiles.map(
   (name) =>
@@ -35,16 +32,17 @@ const queues = dockerFiles.map(
 const repo = new awsx.ecr.Repository('swift-cloud')
 
 // Build docker image
-const images = dockerFiles.map((name) =>
-  repo.buildAndPushImage({
-    context: './',
-    dockerfile: `./Dockerfile.${name}`
-  })
+const images = dockerFiles.map(
+  (name) =>
+    new awsx.ecr.Image('', {
+      repositoryUrl: repo.url,
+      path: './',
+      dockerfile: `./Dockerfile.${name}`
+    })
 )
 
 // Create service
-export const cluster = new awsx.ecs.Cluster('swift-build', {
-  vpc,
+export const cluster = new aws.ecs.Cluster('swift-build', {
   capacityProviders: ['FARGATE', 'FARGATE_SPOT']
 })
 
@@ -127,7 +125,7 @@ export const taskDefinitions = images.map(
   (image, index) =>
     new awsx.ecs.FargateTaskDefinition(`swift-build-task-${dockerFiles[index]}`, {
       container: {
-        image,
+        image: image.imageUri,
         cpu: 4 * 1024,
         environment: [
           {
@@ -136,18 +134,22 @@ export const taskDefinitions = images.map(
           }
         ]
       },
-      taskRole
+      taskRole: {
+        roleArn: taskRole.arn
+      }
     })
 )
 
 // Create a service for long running operations
 export const service = new awsx.ecs.FargateService('swift-build-service-5_7', {
-  cluster,
+  cluster: cluster.arn,
   desiredCount: 2,
   taskDefinitionArgs: {
-    taskRole,
+    taskRole: {
+      roleArn: taskRole.arn
+    },
     container: {
-      image: images[latestSwiftIndex],
+      image: images[latestSwiftIndex].imageUri,
       cpu: 2 * 1024,
       environment: [
         {

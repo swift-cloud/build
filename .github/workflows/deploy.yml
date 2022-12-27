@@ -12,10 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: npm
+          cache: pnpm
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -24,7 +28,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - run: npm install
+      - run: pnpm install
 
       - uses: pulumi/actions@v3
         with:
