@@ -128,7 +128,7 @@ export const taskDefinitions = images.map(
     new awsx.ecs.FargateTaskDefinition(`swift-build-task-${dockerFiles[index]}`, {
       container: {
         image,
-        cpu: 4 * 1024,
+        cpu: 2 * 1024,
         environment: [
           {
             name: 'SQS_QUEUE_URL',
@@ -143,7 +143,7 @@ export const taskDefinitions = images.map(
 // Create a service for long running operations
 export const service = new awsx.ecs.FargateService('swift-build-service-5_7', {
   cluster,
-  desiredCount: 2,
+  desiredCount: 0,
   taskDefinitionArgs: {
     taskRole,
     container: {
