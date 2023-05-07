@@ -9,11 +9,9 @@ const dockerFiles = [
   'rust-1_x',
   'swift-5_5',
   'swift-5_6',
-  'swift-5_7'
+  'swift-5_7',
+  'swift-5_8'
 ]
-
-// Save latest swift index
-const latestSwiftIndex = dockerFiles.length - 1
 
 // Get current stack
 export const stack = pulumi.getStack()
@@ -139,26 +137,3 @@ export const taskDefinitions = images.map(
       taskRole
     })
 )
-
-// Create a service for long running operations
-export const service = new awsx.ecs.FargateService('swift-build-service-5_7', {
-  cluster,
-  desiredCount: 0,
-  taskDefinitionArgs: {
-    taskRole,
-    container: {
-      image: images[latestSwiftIndex],
-      cpu: 2 * 1024,
-      environment: [
-        {
-          name: 'SQS_QUEUE_URL',
-          value: queues[latestSwiftIndex].url
-        },
-        {
-          name: 'TASK_KEEP_ALIVE',
-          value: 'true'
-        }
-      ]
-    }
-  }
-})
