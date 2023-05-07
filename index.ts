@@ -32,7 +32,7 @@ const repo = new awsx.ecr.Repository('swift-cloud')
 // Build docker image
 const images = dockerFiles.map(
   (name) =>
-    new awsx.ecr.Image('', {
+    new awsx.ecr.Image(`image-${stack}-${name}`, {
       repositoryUrl: repo.url,
       path: './',
       dockerfile: `./Dockerfile.${name}`
