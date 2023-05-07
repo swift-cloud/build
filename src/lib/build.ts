@@ -22,8 +22,6 @@ export async function swift(payload: BuildPayload, options: SpawnOptions): Promi
       'build',
       '-c',
       payload.configuration,
-      '-Xswiftc',
-      '-Osize',
       '--triple',
       'wasm32-unknown-wasi',
       '--product',
@@ -105,7 +103,7 @@ export async function rust(payload: BuildPayload, options: SpawnOptions): Promis
 
 export async function optimize(wasmBinaryPath: string, options: SpawnOptions) {
   // Optimize binary size
-  await spawn('wasm-opt', ['-Oz', '-o', wasmBinaryPath, wasmBinaryPath], options)
+  await spawn('wasm-opt', ['-O2', '-ffm', '-o', wasmBinaryPath, wasmBinaryPath], options)
 }
 
 export async function pack(payload: BuildPayload, wasmBinaryPath: string, options: SpawnOptions) {
