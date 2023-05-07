@@ -61,13 +61,16 @@ RUN set -e; \
     && apt-get purge --auto-remove -y curl \
     && node --version
 
+# Install pnpm
+RUN set -e; \
+    curl -fsSL "https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linuxstatic-x64" -o /bin/pnpm; chmod +x /bin/pnpm;
+
 # Install build app
 COPY src ./src
 COPY *.json *.ts ./
 RUN set -e; \
-    npm install \
-    && npm run build \
-    && npm cache clean --force \
+    pnpm install \
+    && pnpm run build \
     && rm -rf node_modules src *.json *.ts
 
 # Set entry point

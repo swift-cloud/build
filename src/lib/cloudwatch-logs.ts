@@ -1,12 +1,14 @@
-import * as https from 'https'
 import * as fastq from 'fastq'
-import CloudWatchLogs from 'aws-sdk/clients/cloudwatchlogs'
+import {
+  CloudWatchLogsClient,
+  CreateLogStreamCommand,
+  GetLogEventsCommand,
+  DescribeLogStreamsCommand,
+  PutLogEventsCommand
+} from '@aws-sdk/client-cloudwatch-logs'
 
-export const client = new CloudWatchLogs({
-  region: 'us-east-1',
-  httpOptions: {
-    agent: new https.Agent({ keepAlive: true })
-  }
+export const client = new CloudWatchLogsClient({
+  region: 'us-east-1'
 })
 
 export interface LogEvent {
@@ -15,12 +17,12 @@ export interface LogEvent {
 }
 
 export async function createDeploymentLogStream(props: { group: string; stream: string }) {
-  return client
-    .createLogStream({
+  return client.send(
+    new CreateLogStreamCommand({
       logGroupName: props.group,
       logStreamName: props.stream
     })
-    .promise()
+  )
 }
 
 export async function queryDeploymentLogs(props: {
@@ -28,14 +30,14 @@ export async function queryDeploymentLogs(props: {
   stream: string
   nextToken?: string
 }) {
-  const res = await client
-    .getLogEvents({
+  const res = await client.send(
+    new GetLogEventsCommand({
       logGroupName: props.group,
       logStreamName: props.stream,
       startFromHead: true,
       nextToken: props.nextToken
     })
-    .promise()
+  )
   return {
     events: res.events ?? [],
     nextToken: res.nextForwardToken
@@ -49,21 +51,22 @@ export async function writeDeploymentLogs(
   const sequenceToken = await (props?.sequenceToken
     ? props.sequenceToken
     : client
-        .describeLogStreams({
-          logGroupName: props.group,
-          logStreamNamePrefix: props.stream
-        })
-        .promise()
+        .send(
+          new DescribeLogStreamsCommand({
+            logGroupName: props.group,
+            logStreamNamePrefix: props.stream
+          })
+        )
         .then((res) => res.logStreams?.[0].uploadSequenceToken))
 
-  return await client
-    .putLogEvents({
+  return await client.send(
+    new PutLogEventsCommand({
       logGroupName: props.group,
       logStreamName: props.stream,
       logEvents: events,
       sequenceToken: sequenceToken
     })
-    .promise()
+  )
 }
 
 export interface DeploymentLog {

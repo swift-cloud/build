@@ -1,22 +1,18 @@
-import * as fs from 'fs'
-import * as https from 'https'
-import S3 from 'aws-sdk/clients/s3'
+import { createReadStream } from 'fs'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { OutputPayload } from './types'
 
-export const s3 = new S3({
-  region: 'us-east-1',
-  httpOptions: {
-    agent: new https.Agent({ keepAlive: true })
-  }
+export const client = new S3Client({
+  region: 'us-east-1'
 })
 
 export async function upload(localPath: string, payload: OutputPayload) {
-  const readStream = fs.createReadStream(localPath)
-  await s3
-    .upload({
+  const readStream = createReadStream(localPath)
+  return client.send(
+    new PutObjectCommand({
       Bucket: payload.bucket,
       Key: payload.key,
       Body: readStream
     })
-    .promise()
+  )
 }
