@@ -1,4 +1,4 @@
-name: Pulumi
+name: Deploy
 
 on:
   push:
@@ -10,8 +10,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  preview:
-    name: Update
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
