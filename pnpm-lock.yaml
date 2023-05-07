@@ -27,6 +27,9 @@ dependencies:
     version: 7.0.3(@aws-sdk/client-sqs@3.328.0)
 
 devDependencies:
+  '@types/aws-lambda':
+    specifier: ^8.10.115
+    version: 8.10.115
   '@types/node':
     specifier: ^20.1.0
     version: 20.1.0
@@ -1707,7 +1710,6 @@ packages:
 
   /@types/aws-lambda@8.10.115:
     resolution: {integrity: sha512-kCZuFXKLV3y8NjSoaD5+qKTpRWvPz3uh3W/u1uwlw3Mg+MtaStg1NWgjAwUXo/VJDb6n6KF1ljykFNlNwEJ53Q==}
-    dev: false
 
   /@types/json-schema@7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
