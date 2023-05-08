@@ -6,20 +6,22 @@ LABEL org.opencontainers.image.source https://github.com/swift-cloud/build
 
 # Install Binaryen
 RUN set -e; \
-    BINARYEN_BIN_URL="https://github.com/WebAssembly/binaryen/releases/download/version_111/binaryen-version_111-x86_64-linux.tar.gz" \
+    BINARYEN_BIN_URL="https://github.com/WebAssembly/binaryen/releases/download/version_112/binaryen-version_112-x86_64-linux.tar.gz" \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -q update && apt-get -q install -y curl && rm -rf /var/lib/apt/lists/* \
     && curl -fsSL "$BINARYEN_BIN_URL" -o binaryen.tar.gz \
     && tar -xzf binaryen.tar.gz --directory / \
-    && cp -r /binaryen-version_111/bin/wasm-opt /usr/bin \
+    && cp -r /binaryen-version_112/bin/wasm-opt /usr/bin \
     && chmod -R o+r /usr/bin/wasm-opt \
-    && rm -rf binaryen.tar.gz binaryen-version_111 \
+    && rm -rf binaryen.tar.gz binaryen-version_112 \
     && apt-get purge --auto-remove -y curl \
     && wasm-opt --version
 
 # Install pnpm
 RUN set -e; \
-    curl -fsSL "https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linuxstatic-x64" -o /bin/pnpm; chmod +x /bin/pnpm;
+    export DEBIAN_FRONTEND=noninteractive \
+    && npm install -g pnpm \
+    && pnpm --version
 
 # Install build app
 COPY src ./src
