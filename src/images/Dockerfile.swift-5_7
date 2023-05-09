@@ -1,0 +1,26 @@
+FROM swift:5.7-amazonlinux2
+
+LABEL maintainer="Andrew Barba <andrew@swift.cloud>"
+LABEL Description="Swift Cloud is the fastest way to build and deploy server side Swift applications."
+LABEL org.opencontainers.image.source https://github.com/swift-cloud/build
+
+# Install Node.js
+RUN yum -y update \
+    && yum -y groupinstall "Development Tools" \
+    && curl -fsSL https://rpm.nodesource.com/setup_16.x | bash - \
+    && yum -y install nodejs \
+    && node --version
+
+# Install pnpm
+RUN npm install -g pnpm \
+    && pnpm --version
+
+# Install build app
+COPY src ./src
+COPY *.json *.ts ./
+RUN pnpm install \
+    && pnpm run build \
+    && rm -rf node_modules src *.json *.ts
+
+# Set entry point
+CMD [ "node", "./bin/fargate.js" ]

@@ -9,7 +9,10 @@ const dockerFiles = [
   'rust-1_x',
   'swift-5_6',
   'swift-5_7',
-  'swift-5_8'
+  'swift-5_8',
+  'swiftwasm-5_6',
+  'swiftwasm-5_7',
+  'swiftwasm-5_8'
 ]
 
 // Get current stack
@@ -34,7 +37,7 @@ const images = dockerFiles.map(
     new awsx.ecr.Image(`image-${stack}-${name}`, {
       repositoryUrl: repo.url,
       path: './',
-      dockerfile: `./Dockerfile.${name}`
+      dockerfile: `./src/images/Dockerfile.${name}`
     })
 )
 

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "outDir": "bin",
-    "target": "es2020",
+    "target": "es2022",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": false,
