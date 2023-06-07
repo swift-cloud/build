@@ -10,9 +10,11 @@ const dockerFiles = [
   'swift-5_6',
   'swift-5_7',
   'swift-5_8',
+  'swift-5_9',
   'swiftwasm-5_6',
   'swiftwasm-5_7',
-  'swiftwasm-5_8'
+  'swiftwasm-5_8',
+  'swiftwasm-5_9'
 ]
 
 // Get current stack
