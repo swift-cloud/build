@@ -25,7 +25,8 @@ export async function swift(payload: BuildPayload, options: SpawnOptions): Promi
       '--triple',
       'wasm32-unknown-wasi',
       '--product',
-      payload.targetName
+      payload.targetName,
+      '--disable-sandbox'
     ],
     {
       ...options,
