@@ -38,13 +38,16 @@ const images = dockerFiles.map(
   (name) =>
     new awsx.ecr.Image(`image-${stack}-${name}`, {
       repositoryUrl: repo.url,
-      path: './',
+      context: './',
       dockerfile: `./src/images/Dockerfile.${name}`
     })
 )
 
 // Create service
-export const cluster = new aws.ecs.Cluster('swift-build', {
+export const cluster = new aws.ecs.Cluster('swift-build', {})
+
+new aws.ecs.ClusterCapacityProviders(`swift-build-cluster-capacity`, {
+  clusterName: cluster.name,
   capacityProviders: ['FARGATE', 'FARGATE_SPOT']
 })
 
@@ -127,6 +130,7 @@ export const taskDefinitions = images.map(
   (image, index) =>
     new awsx.ecs.FargateTaskDefinition(`swift-build-task-${dockerFiles[index]}`, {
       container: {
+        name: `swift-build-container-${dockerFiles[index]}`,
         image: image.imageUri,
         cpu: 4 * 1024,
         environment: [
