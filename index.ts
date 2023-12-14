@@ -6,6 +6,7 @@ import * as awsx from '@pulumi/awsx'
 const dockerFiles = [
   'nodejs-16_x',
   'nodejs-18_x',
+  'nodejs-20_x',
   'rust-1_x',
   'swift-5_6',
   'swift-5_7',
