@@ -13,13 +13,13 @@ jobs:
   deploy:
     runs-on: buildjet-8vcpu-ubuntu-2204
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v2
         with:
           version: 8
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18.x
           cache: pnpm
@@ -33,7 +33,7 @@ jobs:
 
       - run: pnpm install
 
-      - uses: pulumi/actions@v3
+      - uses: pulumi/actions@v4
         with:
           command: up
           stack-name: swift-cloud/build/prod
