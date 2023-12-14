@@ -19,12 +19,13 @@ RUN set -e; \
 
 # Install Node.js
 RUN set -e; \
-    export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -q update && apt-get -q install -y curl && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL "https://deb.nodesource.com/setup_16.x" | bash - \
-    && apt-get install -y nodejs npm \
-    && apt-get purge --auto-remove -y curl \
-    && node --version
+    export DEBIAN_FRONTEND=noninteractive NODE_MAJOR=16 \
+    && apt-get update \
+    && apt-get install -y ca-certificates curl gnupg \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && apt-get update \
+    && apt-get install nodejs npm -y;
 
 # Install pnpm
 RUN set -e; \
