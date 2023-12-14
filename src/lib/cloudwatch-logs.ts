@@ -1,8 +1,6 @@
 import * as fastq from 'fastq'
 import {
   CloudWatchLogsClient,
-  CreateLogStreamCommand,
-  GetLogEventsCommand,
   DescribeLogStreamsCommand,
   PutLogEventsCommand
 } from '@aws-sdk/client-cloudwatch-logs'
@@ -14,34 +12,6 @@ export const client = new CloudWatchLogsClient({
 export interface LogEvent {
   timestamp: number
   message: string
-}
-
-export async function createDeploymentLogStream(props: { group: string; stream: string }) {
-  return client.send(
-    new CreateLogStreamCommand({
-      logGroupName: props.group,
-      logStreamName: props.stream
-    })
-  )
-}
-
-export async function queryDeploymentLogs(props: {
-  group: string
-  stream: string
-  nextToken?: string
-}) {
-  const res = await client.send(
-    new GetLogEventsCommand({
-      logGroupName: props.group,
-      logStreamName: props.stream,
-      startFromHead: true,
-      nextToken: props.nextToken
-    })
-  )
-  return {
-    events: res.events ?? [],
-    nextToken: res.nextForwardToken
-  }
 }
 
 export async function writeDeploymentLogs(

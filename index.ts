@@ -88,10 +88,27 @@ const sqsPolicy = new aws.iam.Policy('swift-build-sqs-read-delete-send', {
   }
 })
 
+// Create cloudwatch logs policy
+const cloudwatchLogsPolicy = new aws.iam.Policy('swift-build-cw-logs-write', {
+  description: 'Policy to read and delete messages from sqs',
+  policy: {
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Action: ['logs:PutLogEvents', 'logs:DescribeLogStreams'],
+        Resource: [
+          'arn:aws:logs:us-east-1:172469817718:log-group:prod-infra-api-deployments66B83660-ikXKbgUtqZs9:*'
+        ]
+      }
+    ]
+  }
+})
+
 // Task role
 const taskRole = new aws.iam.Role('swift-build-task-role', {
   assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsTasksPrincipal),
-  managedPolicyArns: [s3Policy.arn, sqsPolicy.arn, aws.iam.ManagedPolicy.CloudWatchLogsFullAccess]
+  managedPolicyArns: [s3Policy.arn, sqsPolicy.arn, cloudwatchLogsPolicy.arn]
 })
 
 // Attach sqs permissions
@@ -116,7 +133,7 @@ export const s3RoleAttachment = new aws.iam.RolePolicyAttachment(
 export const logsRoleAttachment = new aws.iam.RolePolicyAttachment(
   'swift-build-task-role-logs-attachment',
   {
-    policyArn: aws.iam.ManagedPolicy.CloudWatchLogsFullAccess,
+    policyArn: cloudwatchLogsPolicy.arn,
     role: taskRole
   }
 )
