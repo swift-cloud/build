@@ -1,7 +1,7 @@
 {
   "extends": "@tsconfig/node20",
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "bundler"
+    "module": "Node16",
+    "moduleResolution": "Node16"
   }
 }

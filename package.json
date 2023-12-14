@@ -1,7 +1,6 @@
 {
   "name": "build",
   "private": "true",
-  "type": "module",
   "dependencies": {
     "@aws-sdk/client-cloudwatch-logs": "^3.473.0",
     "@aws-sdk/client-s3": "^3.473.0",
