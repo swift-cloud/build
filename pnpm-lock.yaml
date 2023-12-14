@@ -34,9 +34,9 @@ devDependencies:
   '@pulumi/pulumi':
     specifier: ^3.97.0
     version: 3.97.0
-  '@tsconfig/node20':
-    specifier: ^20.1.2
-    version: 20.1.2
+  '@tsconfig/node16':
+    specifier: ^16.1.1
+    version: 16.1.1
   '@types/aws-lambda':
     specifier: ^8.10.130
     version: 8.10.130
@@ -2017,8 +2017,8 @@ packages:
       '@smithy/types': 2.7.0
       tslib: 2.6.2
 
-  /@tsconfig/node20@20.1.2:
-    resolution: {integrity: sha512-madaWq2k+LYMEhmcp0fs+OGaLFk0OenpHa4gmI4VEmCKX4PJntQ6fnnGADVFrVkBj0wIdAlQnK/MrlYTHsa1gQ==}
+  /@tsconfig/node16@16.1.1:
+    resolution: {integrity: sha512-+pio93ejHN4nINX4pXqfnR/fPLRtJBaT4ORaa5RH0Oc1zoYmo2B2koG+M328CQhHKn1Wj6FcOxCDFXAot9NhvA==}
     dev: true
 
   /@types/aws-lambda@8.10.130:
