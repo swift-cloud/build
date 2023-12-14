@@ -7,7 +7,7 @@ const dockerFiles = [
   'nodejs-16_x',
   'nodejs-18_x',
   'nodejs-20_x',
-  // 'rust-1_x',
+  'rust-1_x',
   'swift-5_6',
   'swift-5_7',
   'swift-5_8',
