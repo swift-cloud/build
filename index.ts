@@ -62,10 +62,7 @@ const s3Policy = new aws.iam.Policy('swift-build-s3-write-only', {
       {
         Effect: 'Allow',
         Action: ['s3:PutObject'],
-        Resource: [
-          'arn:aws:s3:::prod-infra-api-artifactsbucket70f686f6-ahndteqyzoel',
-          'arn:aws:s3:::dev-swift-cloud-api-stack-artifactsbucket70f686f6-jlbt8mnklu1n/*'
-        ]
+        Resource: ['arn:aws:s3:::prod-infra-api-artifactsbucket70f686f6-ahndteqyzoel']
       }
     ]
   }
@@ -85,10 +82,7 @@ const sqsPolicy = new aws.iam.Policy('swift-build-sqs-read-delete-send', {
       {
         Effect: 'Allow',
         Action: ['sqs:SendMessage'],
-        Resource: [
-          'arn:aws:sqs:us-east-1:172469817718:dev-infra-BuildQueue.fifo',
-          'arn:aws:sqs:us-east-1:172469817718:prod-infra-BuildQueue.fifo'
-        ]
+        Resource: ['arn:aws:sqs:us-east-1:172469817718:prod-infra-BuildQueue.fifo']
       }
     ]
   }
