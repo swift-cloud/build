@@ -24,7 +24,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && ap
     zlib1g-dev \
     && rm -r /var/lib/apt/lists/*
 
-ARG SWIFT_TAG=swift-wasm-DEVELOPMENT-SNAPSHOT-2023-06-04-a
+ARG SWIFT_TAG=swift-wasm-5.9-SNAPSHOT-2023-12-12-a
 ENV SWIFT_PLATFORM_SUFFIX=ubuntu22.04_x86_64.tar.gz
 ENV SWIFT_TAG=$SWIFT_TAG
 
@@ -43,14 +43,14 @@ RUN swift --version
 
 # Install Binaryen
 RUN set -e; \
-    BINARYEN_BIN_URL="https://github.com/WebAssembly/binaryen/releases/download/version_113/binaryen-version_113-x86_64-linux.tar.gz" \
+    BINARYEN_BIN_URL="https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz" \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -q update && apt-get -q install -y curl && rm -rf /var/lib/apt/lists/* \
     && curl -fsSL "$BINARYEN_BIN_URL" -o binaryen.tar.gz \
     && tar -xzf binaryen.tar.gz --directory / \
-    && cp -r /binaryen-version_113/bin/wasm-opt /usr/bin \
+    && cp -r /binaryen-version_116/bin/wasm-opt /usr/bin \
     && chmod -R o+r /usr/bin/wasm-opt \
-    && rm -rf binaryen.tar.gz binaryen-version_113 \
+    && rm -rf binaryen.tar.gz binaryen-version_116 \
     && apt-get purge --auto-remove -y curl \
     && wasm-opt --version
 

@@ -1,4 +1,4 @@
-FROM swiftlang/swift:nightly-5.9-amazonlinux2
+FROM swift:5.9-amazonlinux2
 
 LABEL maintainer="Andrew Barba <andrew@swift.cloud>"
 LABEL Description="Swift Cloud is the fastest way to build and deploy server side Swift applications."
