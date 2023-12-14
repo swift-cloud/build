@@ -1,4 +1,4 @@
-import { spawn as _spawn, SpawnOptions as _SpawnOptions } from 'child_process'
+import { SpawnOptions as _SpawnOptions, spawn as _spawn } from 'child_process'
 
 export type SpawnOptions = _SpawnOptions & {
   cwd: string

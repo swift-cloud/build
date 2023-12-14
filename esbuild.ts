@@ -1,9 +1,9 @@
-import { build, BuildOptions } from 'esbuild'
+import { BuildOptions, build } from 'esbuild'
 
 const options: BuildOptions = {
   entryPoints: ['./src/fargate.ts'],
   platform: 'node',
-  target: 'node14',
+  target: 'node16',
   minify: true,
   bundle: true,
   outfile: './bin/fargate.js'

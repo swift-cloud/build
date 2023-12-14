@@ -1,5 +1,5 @@
-import { Consumer } from 'sqs-consumer'
 import { Message } from '@aws-sdk/client-sqs'
+import { Consumer } from 'sqs-consumer'
 import * as lambda from './lambda'
 
 console.log('Listening to queue:', process.env.SQS_QUEUE_URL)

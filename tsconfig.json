@@ -1,18 +1,7 @@
 {
+  "extends": "@tsconfig/node20",
   "compilerOptions": {
-    "strict": true,
-    "outDir": "bin",
-    "target": "es2022",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "sourceMap": false,
-    "declaration": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": false,
-    "pretty": false,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "include": ["src"]
+    "module": "esnext",
+    "moduleResolution": "bundler"
+  }
 }

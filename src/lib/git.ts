@@ -1,5 +1,5 @@
+import { SpawnOptions, spawn } from './spawn'
 import { GitPayload } from './types'
-import { spawn, SpawnOptions } from './spawn'
 
 export async function clone(payload: GitPayload, options: SpawnOptions) {
   // Build url with auth

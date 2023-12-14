@@ -1,9 +1,9 @@
-import * as fastq from 'fastq'
 import {
   CloudWatchLogsClient,
   DescribeLogStreamsCommand,
   PutLogEventsCommand
 } from '@aws-sdk/client-cloudwatch-logs'
+import * as fastq from 'fastq'
 
 export const client = new CloudWatchLogsClient({
   region: 'us-east-1'

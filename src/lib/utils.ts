@@ -1,4 +1,4 @@
-import { spawn, SpawnOptions } from './spawn'
+import { SpawnOptions, spawn } from './spawn'
 
 export async function remove(options: SpawnOptions) {
   await spawn('rm', ['-rf', options.cwd])

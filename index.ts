@@ -1,6 +1,6 @@
-import * as pulumi from '@pulumi/pulumi'
 import * as aws from '@pulumi/aws'
 import * as awsx from '@pulumi/awsx'
+import * as pulumi from '@pulumi/pulumi'
 
 // List of docker files
 const dockerFiles = [
@@ -48,7 +48,7 @@ const images = dockerFiles.map(
 // Create service
 export const cluster = new aws.ecs.Cluster('swift-build', {})
 
-new aws.ecs.ClusterCapacityProviders(`swift-build-cluster-capacity`, {
+new aws.ecs.ClusterCapacityProviders('swift-build-cluster-capacity', {
   clusterName: cluster.name,
   capacityProviders: ['FARGATE', 'FARGATE_SPOT']
 })
@@ -90,7 +90,7 @@ const sqsPolicy = new aws.iam.Policy('swift-build-sqs-read-delete-send', {
 
 // Create cloudwatch logs policy
 const cloudwatchLogsPolicy = new aws.iam.Policy('swift-build-cw-logs-write', {
-  description: 'Policy to read and delete messages from sqs',
+  description: 'Policy to send logs to cloudwatch',
   policy: {
     Version: '2012-10-17',
     Statement: [

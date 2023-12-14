@@ -1,32 +1,31 @@
 {
   "name": "build",
   "private": "true",
+  "type": "module",
   "dependencies": {
     "@aws-sdk/client-cloudwatch-logs": "^3.473.0",
     "@aws-sdk/client-s3": "^3.473.0",
     "@aws-sdk/client-sqs": "^3.473.0",
-    "@pulumi/aws": "^6.13.3",
-    "@pulumi/awsx": "^2.3.0",
-    "@pulumi/pulumi": "^3.96.2",
     "fastq": "^1.15.0",
-    "sqs-consumer": "^7.5.0"
+    "sqs-consumer": "^8.1.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.4.1",
+    "@pulumi/aws": "^6.13.3",
+    "@pulumi/awsx": "^2.3.0",
+    "@pulumi/pulumi": "^3.97.0",
+    "@tsconfig/node20": "^20.1.2",
     "@types/aws-lambda": "^8.10.130",
     "@types/node": "^20.10.4",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
     "esbuild": "^0.19.9",
     "eslint": "^8.55.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.0.1",
-    "prettier": "^3.1.1",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.6.2",
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "build": "tsc -emitDeclarationOnly && ts-node -T ./esbuild.ts",
-    "lint": "eslint src *.ts",
-    "ts": "ts-node -T"
+    "build": "tsc --noEmit && tsx ./esbuild.ts",
+    "lint": "biome ci src *.ts *.json",
+    "lint:format": "biome format --write src *.ts *.json",
+    "lint:check": "biome check --apply src *.ts *.json"
   }
 }

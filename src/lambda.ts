@@ -1,11 +1,11 @@
-import { SQSHandler } from 'aws-lambda'
-import { BuildMessage } from './lib/types'
-import { DeploymentLogger } from './lib/cloudwatch-logs'
 import * as path from 'path'
+import { SQSHandler } from 'aws-lambda'
+import * as build from './lib/build'
+import { DeploymentLogger } from './lib/cloudwatch-logs'
 import * as git from './lib/git'
 import * as s3 from './lib/s3'
 import * as sqs from './lib/sqs'
-import * as build from './lib/build'
+import { BuildMessage } from './lib/types'
 import * as utils from './lib/utils'
 
 export const handler: SQSHandler = async (event) => {
@@ -87,7 +87,7 @@ export async function buildProject(
   })
 
   const totalTime = (Date.now() - startTime) / 1000
-  logger.info('[build] complete:', totalTime.toFixed(0) + 's', '\n')
+  logger.info('[build] complete:', `${totalTime.toFixed(0)}s`, '\n')
 }
 
 async function buildWasmBinary(

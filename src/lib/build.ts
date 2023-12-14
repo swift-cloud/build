@@ -1,7 +1,7 @@
-import { mkdir, copyFile, writeFile } from 'fs/promises'
-import { spawn, SpawnOptions } from './spawn'
-import { BuildPayload } from './types'
 import * as path from 'path'
+import { copyFile, mkdir, writeFile } from 'fs/promises'
+import { SpawnOptions, spawn } from './spawn'
+import { BuildPayload } from './types'
 
 export type BuildResult = { wasmBinaryPath: string }
 
@@ -67,7 +67,7 @@ export async function nodejs(payload: BuildPayload, options: SpawnOptions): Prom
   })
 
   // Build binary path
-  const wasmBinaryPath = path.join(cwd, `bin/main.wasm`)
+  const wasmBinaryPath = path.join(cwd, 'bin/main.wasm')
 
   return {
     wasmBinaryPath: wasmBinaryPath
@@ -110,7 +110,7 @@ export async function pack(payload: BuildPayload, wasmBinaryPath: string, option
   const pkgDir = `${options.cwd}/pkg`
   const appDir = `${pkgDir}/app`
   const binDir = `${appDir}/bin`
-  const pkgName = `app.tar.gz`
+  const pkgName = 'app.tar.gz'
 
   // Make necessary directories
   await mkdir(pkgDir)

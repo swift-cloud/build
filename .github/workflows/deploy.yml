@@ -33,6 +33,10 @@ jobs:
 
       - run: pnpm install
 
+      - run: pnpm lint
+
+      - run: pnpm build
+
       - uses: pulumi/actions@v4
         with:
           command: up
