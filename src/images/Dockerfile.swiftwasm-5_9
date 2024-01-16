@@ -1,45 +1,8 @@
-FROM ubuntu:22.04
+FROM ghcr.io/swiftwasm/swift:5.9
 
 LABEL maintainer="Andrew Barba <andrew@swift.cloud>"
 LABEL Description="Swift Cloud is the fastest way to build and deploy server side Swift applications."
 LABEL org.opencontainers.image.source https://github.com/swift-cloud/build
-
-RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && apt-get -q update && \
-    apt-get -q install -y \
-    binutils \
-    git \
-    gnupg2 \
-    libc6-dev \
-    libcurl4-openssl-dev \
-    libedit2 \
-    libgcc-11-dev \
-    libpython3-dev \
-    libsqlite3-0 \
-    libstdc++-11-dev \
-    libxml2-dev \
-    libz3-dev \
-    pkg-config \
-    tzdata \
-    zip \
-    zlib1g-dev \
-    && rm -r /var/lib/apt/lists/*
-
-ARG SWIFT_TAG=swift-wasm-5.9-SNAPSHOT-2023-12-12-a
-ENV SWIFT_PLATFORM_SUFFIX=ubuntu22.04_x86_64.tar.gz
-ENV SWIFT_TAG=$SWIFT_TAG
-
-RUN set -e; \
-    SWIFT_BIN_URL="https://github.com/swiftwasm/swift/releases/download/$SWIFT_TAG/$SWIFT_TAG-$SWIFT_PLATFORM_SUFFIX" \
-    && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -q update && apt-get -q install -y curl && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL "$SWIFT_BIN_URL" -o swift.tar.gz \
-    && tar -xzf swift.tar.gz --directory / --strip-components=1 \
-    && chmod -R o+r /usr/lib/swift \
-    && rm -rf swift.tar.gz \
-    && apt-get purge --auto-remove -y curl
-
-# Print Installed Swift Version
-RUN swift --version
 
 # Install Binaryen
 RUN set -e; \
